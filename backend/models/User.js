@@ -1,4 +1,4 @@
-const mongoose=require('mongoose');
+import mongoose from 'mongoose';
 
 //create a schema
 const userSchema=new mongoose.Schema(
