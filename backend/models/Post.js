@@ -24,7 +24,7 @@ const postSchema=new mongoose.Schema(
         tags:[
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Tags",
+                ref: "Tag",
             }
         ],
 
@@ -43,13 +43,13 @@ const postSchema=new mongoose.Schema(
         likes:[
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Likes",
+                ref: "Like",
             }
         ],
         comments:[
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Comments",
+                ref: "Comment",
             }
         ],
         likeCount:{
