@@ -16,7 +16,7 @@ const generateToken=(userId)=>{
 export const registerUser=async(req,res)=>{
     try{
         //receive user data from client(request)
-        const {fullName,username,email,password,googleId,authProvider}=req.body;   //take req.body object & destructure the LHS properties
+        const {fullName,username,email,password,googleId,authProvider}=req.body;   //extract fields: take req.body object & destructure the LHS properties
 
         //check db if email or username exists
         const existingUser=await User.findOne({$or: [{email},{username}]});
@@ -92,6 +92,114 @@ export const loginUser=async(req,res)=>{
             user,
             token
         });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Get user profile data
+export const getUserProfile=async(req,res)=>{
+    try{
+        const user=await User.findById(req.params.id)   //id from URL parameter(values)
+            //req.params: an object holding all parameters of the route (/:id= {id: ...} 
+            .populate("followers","username profilePic")   //replace the object ids with the document(record) but only with username & profilePic field 
+            .populate("following","username profilePic")
+            .populate("posts");     //include all fields of a post's record 
+        
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        res.status(200).json(user);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Update user profile
+export const updateUserProfile=async(req,res)=>{
+    try{
+        const user=await User.findById(req.user.id);   //attach req.user in auth middleware later
+
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        const {username,email,bio,profilePic,socialLinks}=req.body;  //extract fields from req body
+
+        if (username && username!==user.username){  //if req.body contains new username & it's not equal to the db's username
+            //check if the new username is taken by any other user
+            const exists=await User.findOne({username});    
+            if (exists){
+                return res.status(400).json({message: "Username already taken"});
+            }
+            user.username=username;   //update in db 
+        }
+        if (email && email!==user.email){
+            const exists=await User.findOne({email});
+            if (exists){
+                return res.status(400).json({message: "Email already taken"});
+            }
+            user.email=email;
+        }
+        if (bio){
+            user.bio=bio;
+        }
+        if (profilePic){
+            user.profilePic=profilePic;
+        }
+        if (socialLinks){
+            user.socialLinks=socialLinks;
+        }
+
+        const updatedUser=await user.save();
+
+        res.status(200).json({
+            user: updatedUser,
+            message: "User details updated"
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Change password
+export const changePassword=async(req,res)=>{
+    try{
+        //extract oldPassword & newPassword from request body
+        const {oldPassword,newPassword}=req.body;
+
+        //check if user exists
+        const user=await User.findById(req.user.id);
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        //match the oldPassword with the password in db
+        const isMatch= await bcrypt.compare(oldPassword,user.password);
+        if (!isMatch){
+            return res.status(400).json({message: "Old password incorrect"});
+        }
+
+        //check if oldPassword & newPassword are different
+        if (oldPassword===newPassword){
+            return res.status(400).json({message: "Old password cannot be same as new password"});
+        }
+
+        //hash the new password
+        user.password=await bcrypt.hash(newPassword,10);
+
+        //save to db
+        await user.save();
+
+        //send back response 
+        res.status(200).json({message: "Password updated successfully"});
     }
     catch(err){
         console.error(err);
