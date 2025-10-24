@@ -174,6 +174,9 @@ export const changePassword=async(req,res)=>{
     try{
         //extract oldPassword & newPassword from request body
         const {oldPassword,newPassword}=req.body;
+        if (!oldPassword || !newPassword){
+            return res.status(404).json({message: "Old password or new password is missing"});
+        }
 
         //check if user exists
         const user=await User.findById(req.user.id);
@@ -207,4 +210,76 @@ export const changePassword=async(req,res)=>{
     }
 }
 
-//
+//Forgot password
+export const forgotPassword=async(req,res)=>{
+    try{
+        const {email}=req.body;
+        if (!email){
+            return res.status(400).json({message: "Email is required"});
+        }
+
+        const user=await User.findOne({email});
+        if (!user){
+            return res.status(404).json({message: "User not found"}); 
+        }
+
+        //generate reset token
+        const resetToken=jwt.sign(
+            {id: user._id},
+            process.env.JWT_SECRET,
+            {expiresIn: "15m"}
+        );
+
+        res.status(200).json({
+            resetToken,
+            message: "Password reset token generated successfully"
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Reset password
+export const resetPassword=async(req,res)=>{
+    try{
+        //extract token from req.params: an object holding all parameters of the route (/:id= {id: ...}
+        const {token}=req.params;
+
+        const {newPassword}=req.body;
+        if (!newPassword){
+            return res.status(400).json({message: "Password is required"});
+        }
+
+        //verify token
+        let decoded;    //if token is valid after decoding: decoded = { id: "<user's MongoDB _id>", iat: <timestamp>, exp: <timestamp> } 
+        try{
+            decoded=jwt.verify(token,process.env.JWT_SECRET);
+        }
+        catch(err){
+            res.status(400).json({message: "Invalid or expired token"});
+        }
+
+        //check if user exists
+        const user=await User.findById(decoded.id);
+        if (!user){
+            return res.status(404).json({message: "User not found"}); 
+        }
+
+        //hash the new password & save to db 
+        user.password=await bcrypt.hash(newPassword,10);
+        await user.save();
+
+        res.status(200).json({message: "Password reset successfully"});
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Follow/unfollow users
+export const followUser=async(req,res)=>{
+
+}
