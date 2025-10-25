@@ -359,4 +359,29 @@ export const fetchFollowing=async(req,res)=>{
     }
 }
 
-//
+//Fetch posts count
+export const fetchPostCount=async(req,res)=>{
+    try{
+        const userId=req.params.id || req.user.id;
+
+        //count documents in Post model for the user id
+        const count=await Post.countDocuments({author: userId});
+
+        res.status(200).json({postCount: count});
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Delete account
+export const deleteAccount=async(req,res)=>{
+    
+}
+
+//Search users
+export const searchUsers=async(req,res)=>{
+
+}
