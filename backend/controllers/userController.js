@@ -281,5 +281,82 @@ export const resetPassword=async(req,res)=>{
 
 //Follow/unfollow users
 export const followUser=async(req,res)=>{
+    try{
+        const user=await User.findById(req.user.id);    //mongoose document object
+        const userToFollow=await User.findById(req.params.id);
 
+        if (!user || !userToFollow){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        if (user.following.includes(userToFollow._id)){
+            //unfollow
+            user.following.pull(userToFollow._id);
+            userToFollow.followers.pull(user._id);
+        }
+        else{
+            //follow
+            user.following.push(userToFollow._id);
+            userToFollow.followers.push(user._id);
+        }
+
+        await user.save();
+        await userToFollow.save();
+
+        res.status(200).json({
+            followers: userToFollow.followers.length,
+            following: user.following.length,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
 }
+
+//Fetch followers
+export const fetchFollowers=async(req,res)=>{
+    try{
+        //use user id from URL provided else use logged-in user's id 
+        const userId=req.params.id || req.user.id;
+
+        //replace followers field's object ids with actual user doc & include fullName, username & profilePic
+        const user=await User.findById(userId).populate("followers","fullName username profilePic");  
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        res.status(200).json({
+            followers: user.followers,
+            count: user.followers.length
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Fetch following
+export const fetchFollowing=async(req,res)=>{
+    try{
+        //use user id from URL provided else use logged-in user's id 
+        const userId=req.params.id || req.user.id;
+
+        const user=await User.findById(userId).populate("following","fullName username profilePic");  
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        res.status(200).json({
+            following: user.following,
+            count: user.following.length
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//
