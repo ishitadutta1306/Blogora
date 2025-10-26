@@ -2,6 +2,9 @@ import User from '../models/User'
 import Post from '../models/Post'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import Comment from '../models/Comment'
+import Like from '../models/Like'
+import Notification from '../models/Notification'
 
 //generate jwt token
 const generateToken=(userId)=>{
@@ -378,10 +381,60 @@ export const fetchPostCount=async(req,res)=>{
 
 //Delete account
 export const deleteAccount=async(req,res)=>{
-    
+    try{
+        const user=await User.findById(req.user.id);
+        if (!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        //delete user's posts
+        await Post.deleteMany({author: user._id});  //find every author with 'user._id' & then do deleteMany operation
+
+        //delete likes & comments
+        await Like.deleteMany({user: user._id});
+        await Comment.deleteMany({user: user._id});
+
+        //delete notifications
+        await Notification.deleteMany({sender: user._id});
+
+        //remove user from others' followers & following list
+        await User.updateMany(
+            {followers: user._id},   //find every user whose followers array contains this 'user._id' 
+            {$pull: {followers: user._id}}   //remove this 'user._id' from all the matching users' followers array
+        );
+        await User.updateMany(
+            {following: user._id},
+            {$pull: {following: user._id}}
+        );
+        
+        //delete the user document itself
+        await User.findByIdAndDelete({user: user._id});
+
+        res.status(200).json({message: "Account & all related data successfully deleted"});
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
 }
 
 //Search users
 export const searchUsers=async(req,res)=>{
+    try{
+        //get search query
+        const searchQuery=req.query.q;
+        if (!searchQuery)
+            return res.status(404).json({message: "Search query is missing"});
 
+        //search & store usernames that match the search query 
+        const users=await User.find(
+            {username: {$regex: query, $options: "i"}}  //match usernames partially(regex) case-insensitive(options: "i")
+        ).select("fullName username profilePic");   //include the only selected fields 
+
+        res.status(200).json(users);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
 }
