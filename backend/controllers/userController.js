@@ -283,7 +283,7 @@ export const resetPassword=async(req,res)=>{
 }
 
 //Follow/unfollow users
-export const followUser=async(req,res)=>{
+export const toggleFollowUser=async(req,res)=>{
     try{
         const user=await User.findById(req.user.id);    //mongoose document object
         const userToFollow=await User.findById(req.params.id);
