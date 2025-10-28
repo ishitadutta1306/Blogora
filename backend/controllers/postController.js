@@ -79,3 +79,110 @@ export const getAllPosts=async(req,res)=>{
 }
 
 //Get single post by slug
+export const getPostBySlug=async(req,res)=>{
+    try{
+        const post=await Post.findById(req.params.slug)
+            .populate("author","username profilePic")   //only select the username & profilePic fields of author field
+            .populate("tags","name")
+            .populate({
+                path: "comments",   //for comment field (means for every comment- select the following fields)
+                populate: {path: "author", select: "username profilePic"}   //in comment field, in author nested field, select username & profilePic to show instead of author object ids
+            });
+        
+        if (!post){
+            return res.status(404).json({message: "Post not found"});
+        }
+        
+        res.status(200).json(post);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Update post
+export const updatePost=async(req,res)=>{
+    try{
+        //extract these fields from request body
+        const {title,subtitle,content,coverImage,tags,status}=req.body;
+
+        //find the post in db
+        const post=await Post.findOne(req.params.id);
+        if (!post){
+            return res.status(404).json({message: "Post not found"});
+        }
+
+        //check if the user is authorized to update this post
+        if (post.author.toString()!==req.user.id){  //author fields contains object id: ObjectId("7834.."), it's then converted into string "7834.." & then compared
+            return res.status(403).json({message: "Unauthorized"});
+        }
+
+        //Update post
+        if (title){
+            post.title=title;
+        }
+        if (subtitle){
+            post.subtitle=subtitle;
+        }
+        if (content){
+            post.content=content;
+        }
+        if (coverImage){
+            post.coverImage=coverImage;
+        }
+        if (tags){
+            post.tags=tags;
+        }
+        if (status){
+            post.status=status;
+        }
+
+        //save the post to db
+        await post.save();
+
+        //send updated post as response
+        res.status(200).json(post);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Delete post
+export const deletePost=async(req,res)=>{
+    try{
+        //find the post in db
+        const post=await Post.findById(req.params.id);
+        if (!post){
+            return res.status(404).json({message: "Post not found"});
+        }
+
+        //check if the user is authorized to delete it
+        if (post.author.toString()!==req.user.id){
+            return res.status(403).json({message: "Unauthorized"});
+        }
+
+        //remove it from db
+        await post.remove();
+
+        //remove reference of this post from the user's posts array
+        await User.findByIdAndUpdate(
+            req.user.id,    //find by this id
+            {$pull: {posts: post._id}}  //$pull- remove a specific value from the document, here, from the 'posts' array- remove the given post id
+        );
+
+        res.status(200).json({message: "Post deleted successfully"});
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+}
+
+//Like or unlike a post
+export const toggleLikePost=async(req,res)=>{
+    
+}
