@@ -1,8 +1,5 @@
 import Post from '../models/Post'
 import User from '../models/User'
-import Like from '../models/Like'
-import Comment from '../models/Comment'
-import mongoose from 'mongoose'
 
 //Create post
 export const createPost=async(req,res)=>{
