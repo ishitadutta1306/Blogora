@@ -5,7 +5,7 @@ export const toggleBookmark=async(req,res)=>{
     try{
         const {postId}=req.body;
         if (!postId){
-            return res.status(404).json({message: "Post not found"});
+            return res.status(400).json({message: "Post Id is required"});
         }
 
         //check if the user has already bookmarked the post- each bookmark document contains the post id & user id
