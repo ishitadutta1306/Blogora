@@ -1,5 +1,3 @@
-import Post from '../models/Post'
-import User from '../models/User'
 import Bookmark from '../models/Bookmark'
 
 //Add or remove bookmark from a post
