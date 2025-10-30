@@ -22,7 +22,7 @@ export const toggleBookmark=async(req,res)=>{
         else{
             const bookmark=new Bookmark({post: postId, user: req.user.id});
             await bookmark.save();
-            return res.status(200).json({message: "Bookmarked the post"});
+            return res.status(201).json({message: "Bookmarked the post"});
         }
     }
     catch(err){
