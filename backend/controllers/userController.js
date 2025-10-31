@@ -408,7 +408,7 @@ export const deleteAccount=async(req,res)=>{
         );
         
         //delete the user document itself
-        await User.findByIdAndDelete({user: user._id});
+        await User.findByIdAndDelete(user._id);
 
         res.status(200).json({message: "Account & all related data successfully deleted"});
     }
@@ -428,7 +428,7 @@ export const searchUsers=async(req,res)=>{
 
         //search & store usernames that match the search query 
         const users=await User.find(
-            {username: {$regex: query, $options: "i"}}  //match usernames partially(regex) case-insensitive(options: "i")
+            {username: {$regex: searchQuery, $options: "i"}}  //match usernames partially(regex) case-insensitive(options: "i")
         ).select("fullName username profilePic");   //include the only selected fields 
 
         res.status(200).json(users);

@@ -78,7 +78,7 @@ export const getAllPosts=async(req,res)=>{
 //Get single post by slug
 export const getPostBySlug=async(req,res)=>{
     try{
-        const post=await Post.findById(req.params.slug)
+        const post=await Post.findOne({slug: req.params.slug})
             .populate("author","username profilePic")   //only select the username & profilePic fields of author field
             .populate("tags","name")
             .populate({
@@ -105,7 +105,7 @@ export const updatePost=async(req,res)=>{
         const {title,subtitle,content,coverImage,tags,status}=req.body;
 
         //find the post in db
-        const post=await Post.findOne(req.params.id);
+        const post=await Post.findById(req.params.id);
         if (!post){
             return res.status(404).json({message: "Post not found"});
         }
