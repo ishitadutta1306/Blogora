@@ -9,6 +9,7 @@ import postRoutes from './routes/postRouter.js'
 import commentRoutes from './routes/commentRouter.js'
 import likeRoutes from './routes/likeRouter.js'
 import bookmarkRoutes from './routes/bookmarkRouter.js'
+import tagRoutes from './routes/tagRouter.js'
 
 const app=express();
 const PORT=process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use('/api/posts',postRoutes);
 app.use('/api/comments',commentRoutes);
 app.use('/api/likes',likeRoutes);
 app.use('/api/bookmarks',bookmarkRoutes);
+app.use('/api/tags',tagRoutes);
 
 //Basic route
 app.get('/',(req,res)=>{
