@@ -1,6 +1,6 @@
 import express from "express";
-import { toggleBookmark, getAllBookmarks } from "../controllers/bookmarkController";
-import { protect } from "../middleware/authMiddleware";
+import { toggleBookmark, getAllBookmarks } from "../controllers/bookmarkController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router=express.Router();
 

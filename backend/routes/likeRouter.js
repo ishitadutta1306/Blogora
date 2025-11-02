@@ -1,6 +1,6 @@
 import express from "express";
-import { toggleLikePost, toggleLikeComment } from "../controllers/likeController";
-import { protect } from "../middleware/authMiddleware";
+import { toggleLikePost, toggleLikeComment } from "../controllers/likeController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router=express.Router();
 

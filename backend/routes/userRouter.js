@@ -1,6 +1,6 @@
 import express from 'express';
-import { registerUser, loginUser, getUserProfile, updateUserProfile, changePassword, forgotPassword, resetPassword, toggleFollowUser, fetchFollowers, fetchFollowing, fetchPostCount, deleteAccount, searchUsers } from '../controllers/userController';
-import { protect } from '../middleware/authMiddleware';
+import { registerUser, loginUser, getUserProfile, updateUserProfile, changePassword, forgotPassword, resetPassword, toggleFollowUser, fetchFollowers, fetchFollowing, fetchPostCount, deleteAccount, searchUsers } from '../controllers/userController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 //create a router object
 const router=express.Router();
@@ -17,9 +17,12 @@ router.get("/search",searchUsers);
 router.put("/update",protect,updateUserProfile);
 router.put("/change-password",protect,changePassword);
 router.put("/follow/:id",protect,toggleFollowUser);
-router.get("/followers/:id?",protect,fetchFollowers);
-router.get("/following/:id?",protect,fetchFollowing);
-router.get("/posts-count/:id?",protect,fetchPostCount);
+router.get("/followers",protect,fetchFollowers);
+router.get("/followers/:id",protect,fetchFollowers);
+router.get("/following",protect,fetchFollowing);
+router.get("/following/:id",protect,fetchFollowing);
+router.get("/posts-count",protect,fetchPostCount);
+router.get("/posts-count/:id",protect,fetchPostCount);
 router.delete("/delete",protect,deleteAccount);
 
 export default router;

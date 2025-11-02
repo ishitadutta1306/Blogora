@@ -1,6 +1,6 @@
 import express from "express";
-import { createPost, getAllPosts, getPostBySlug, updatePost, deletePost } from '../controllers/postController';
-import { protect } from "../middleware/authMiddleware";
+import { createPost, getAllPosts, getPostBySlug, updatePost, deletePost } from '../controllers/postController.js';
+import { protect } from "../middleware/authMiddleware.js";
 
 const router=express.Router();
 
