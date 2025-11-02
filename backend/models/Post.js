@@ -82,4 +82,4 @@ postSchema.pre("validate",function(next){
     next();
 });
 
-module.exports=mongoose.model("Post",postSchema);
+export default mongoose.model("Post",postSchema);

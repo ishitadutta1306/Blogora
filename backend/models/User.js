@@ -91,4 +91,4 @@ const userSchema=new mongoose.Schema(
 );
 
 //create a mongoose model named 'User' where 'userSchema' is the structure of the collection (schema) 
-module.exports=mongoose.model('User',userSchema);
+export default mongoose.model('User',userSchema);
