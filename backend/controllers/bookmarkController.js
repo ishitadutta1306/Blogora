@@ -1,4 +1,4 @@
-import Bookmark from '../models/Bookmark'
+import Bookmark from '../models/Bookmark.js'
 
 //Add or remove bookmark from a post
 export const toggleBookmark=async(req,res)=>{

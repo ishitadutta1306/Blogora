@@ -1,5 +1,5 @@
-import Post from '../models/Post'
-import Comment from '../models/Comment'
+import Post from '../models/Post.js'
+import Comment from '../models/Comment.js'
 
 //Like or unlike a post
 export const toggleLikePost=async(req,res)=>{

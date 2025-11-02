@@ -1,10 +1,10 @@
-import User from '../models/User'
-import Post from '../models/Post'
+import User from '../models/User.js'
+import Post from '../models/Post.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import Comment from '../models/Comment'
-import Like from '../models/Like'
-import Notification from '../models/Notification'
+import Comment from '../models/Comment.js'
+import Like from '../models/Like.js'
+import Notification from '../models/Notification.js'
 
 //generate jwt token
 const generateToken=(userId)=>{
