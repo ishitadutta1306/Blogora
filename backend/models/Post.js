@@ -75,11 +75,24 @@ const postSchema=new mongoose.Schema(
     {timestamps:true}
 );
 
-postSchema.pre("validate",function(next){
-    if (this.title && !this.slug){
-        this.slug=this.title.trim().toLowerCase().replace(/[^\w\s-]/g,"").replace(/\s+/g,"-");
+postSchema.pre("validate", async function(next) {
+  if (this.title && !this.slug) {
+    let baseSlug = this.title.trim().toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+    let slug = baseSlug;
+    let count = 1;
+
+    // Ensure uniqueness
+    const Post = mongoose.model("Post", postSchema);
+    while (await Post.exists({ slug })) {
+      slug = `${baseSlug}-${count++}`;
     }
-    next();
+
+    this.slug = slug;
+  }
+  next();
 });
 
 export default mongoose.model("Post",postSchema);
