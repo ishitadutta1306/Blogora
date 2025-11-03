@@ -48,7 +48,7 @@ export const getAllPosts=async(req,res)=>{
         //find all published posts present in db
         const posts=await Post.find({status: "published"})
             .sort({createdAt: -1})  //latest post 1st
-            .populate("author","fullname username profilePic")  //replace object id of author field with the later fields
+            .populate("author","fullName username profilePic")  //replace object id of author field with the later fields
             .populate("tags","name")
             .select("title subtitle coverImage createdAt likeCount commentCount");  //return these specific fields
 
@@ -161,8 +161,8 @@ export const deletePost=async(req,res)=>{
             return res.status(403).json({message: "Unauthorized"});
         }
 
-        //remove it from db
-        await post.remove();
+        //delete it from db
+        await post.deleteOne();
 
         //remove reference of this post from the user's posts array
         await User.findByIdAndUpdate(
