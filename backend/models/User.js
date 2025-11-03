@@ -24,6 +24,7 @@ const userSchema=new mongoose.Schema(
         },
         password:{
             type: String,
+            select: false,   //exclude password field in queries & responses 
             required: function(){
                 return this.authProvider==="email"  //if the current document's authProvider returns true for email
             },
