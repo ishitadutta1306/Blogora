@@ -5,7 +5,7 @@ import Comment from '../models/Comment.js'
 export const toggleLikePost=async(req,res)=>{
     try{
         //find the post in db & check if it exists
-        const post=await Post.findById(req.params.id);
+        const post=await Post.findById(req.params.postId);
         if (!post){
             return res.status(404).json({message: "Post not found"});
         }
