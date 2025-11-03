@@ -50,9 +50,12 @@ export const registerUser=async(req,res)=>{
         //generate JWT token
         const token=generateToken(savedUser._id);   // _id: unique identifier for every document in mongodb- automatically created when we save a document into a mongodb collection 
 
+        // Exclude password field from response (clean & lightweight)
+        const { password: _, ...userData } = savedUser._doc;
+
         //send response back with the user info & auth token 
         res.status(201).json({
-            user: savedUser,    //send user info of the newly created user document 
+            user: userData,    //send user info of the newly created user document 
             token
         });
     }
@@ -69,7 +72,7 @@ export const loginUser=async(req,res)=>{
         const {email,password,authProvider}=req.body;
 
         //check in db if user exists
-        const user=await User.findOne({email});
+        const user=await User.findOne({email}).select('+password');
         if (!user){
             return res.status(400).json({message: "User not found"});
         }
@@ -90,9 +93,12 @@ export const loginUser=async(req,res)=>{
         //generate JWT token
         const token=generateToken(user._id);
 
+        // exclude password from response
+        const { password: _, ...userData } = user._doc;
+
         //send back response
         res.status(200).json({
-            user,
+            user: userData,
             token
         });
     }
@@ -251,9 +257,13 @@ export const resetPassword=async(req,res)=>{
         //extract token from req.params: an object holding all parameters of the route (/:id= {id: ...}
         const {token}=req.params;
 
-        const {newPassword}=req.body;
-        if (!newPassword){
-            return res.status(400).json({message: "Password is required"});
+        const {newPassword,confirmPassword}=req.body;
+        if (!newPassword || !confirmPassword){
+            return res.status(400).json({message: "Both fields are required"});
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
         }
 
         //verify token
@@ -262,7 +272,7 @@ export const resetPassword=async(req,res)=>{
             decoded=jwt.verify(token,process.env.JWT_SECRET);
         }
         catch(err){
-            res.status(400).json({message: "Invalid or expired token"});
+            return res.status(400).json({message: "Invalid or expired token"});
         }
 
         //check if user exists
