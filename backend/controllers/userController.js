@@ -312,6 +312,15 @@ export const toggleFollowUser=async(req,res)=>{
             //follow
             user.following.push(userToFollow._id);
             userToFollow.followers.push(user._id);
+
+            //Send notification only if it's a follow
+            if (userToFollow._id.toString() !== req.user.id) {
+                await Notification.create({
+                    type: "follow",
+                    sender: req.user.id,
+                    recipient: userToFollow._id
+                });
+            }
         }
 
         await user.save();
