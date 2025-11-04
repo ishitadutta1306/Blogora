@@ -9,7 +9,7 @@ router.get("/:postId",getAllComments);
 
 //protected routes:
 router.post("/",protect,addComment);
-router.delete("/:id",protect,deleteComment);
-router.post("/reply/:id",protect,replyToComment);
+router.delete("/:commentId",protect,deleteComment);
+router.post("/reply/:commentId",protect,replyToComment);
 
 export default router;
