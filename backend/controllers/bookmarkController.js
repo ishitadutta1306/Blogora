@@ -10,9 +10,6 @@ export const toggleBookmark=async(req,res)=>{
 
         //check if the user has already bookmarked the post- each bookmark document contains the post id & user id
         const existing=await Bookmark.findOne({post: postId, user: req.user.id});   //find the 1st document that matches the given post id & user id 
-        if (!existing){
-            return res.status(404).json({message: "Bookmark not found"});
-        }
 
         //check if bookmark exists
         if (existing){
