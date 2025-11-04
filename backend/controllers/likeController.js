@@ -18,6 +18,16 @@ export const toggleLikePost=async(req,res)=>{
         else{
             //like the post
             post.likes.push(req.user.id);
+
+            //create notification only if the liker is not the post owner
+            if (post.user.toString() !== req.user.id) {
+                await Notification.create({
+                    type: "like",
+                    sender: req.user.id,
+                    recipient: post.user,
+                    post: post._id
+                });
+            }
         }
 
         //update the like count in db
@@ -41,7 +51,7 @@ export const toggleLikePost=async(req,res)=>{
 export const toggleLikeComment=async(req,res)=>{
     try{
         //find comment
-        const comment=await Comment.findById(req.params.id);
+        const comment=await Comment.findById(req.params.commentId);
         if (!comment){
             return res.status(404).json({message: "Comment not found"});
         }
