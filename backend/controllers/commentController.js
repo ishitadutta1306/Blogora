@@ -26,8 +26,33 @@ export const addComment=async(req,res)=>{
         await comment.save();
 
         //add this comment to the post's comment's array
-        post.comments.push(comment._id);
-        await post.save();
+        existingPost.comments.push(comment._id);
+        await existingPost.save();
+
+        //Notification: Comment on post
+        if (existingPost.user.toString() !== req.user.id) {
+            await Notification.create({
+                type: "comment",
+                sender: req.user.id,
+                recipient: existingPost.user,
+                post: post,
+                comment: comment._id
+            });
+        }
+
+        //Notification: Reply to comment
+        if (parentComment) {
+            const parent = await Comment.findById(parentComment);
+            if (parent && parent.user.toString() !== req.user.id) {
+                await Notification.create({
+                    type: "comment",
+                    sender: req.user.id,
+                    recipient: parent.user,
+                    post: post,
+                    comment: comment._id
+                });
+            }
+        }
 
         res.status(201).json({
             message: "Comment added successfully",
@@ -44,7 +69,7 @@ export const addComment=async(req,res)=>{
 export const getAllComments=async(req,res)=>{
     try{
         //find all comments for a particular post
-        const comments=await Comment.find({post: req.params.post})
+        const comments=await Comment.find({post: req.params.postId})
             .sort({createdAt: -1})
             .populate("user","username profilePic")
             .populate({
@@ -65,7 +90,7 @@ export const getAllComments=async(req,res)=>{
 export const deleteComment=async(req,res)=>{
     try{
         //find if the comment exists
-        const comment=await Comment.findById(req.params.id);
+        const comment=await Comment.findById(req.params.commentId);
         if (!comment){
             return res.status(404).json({message: "Comment not found"});
         }
@@ -74,6 +99,9 @@ export const deleteComment=async(req,res)=>{
         if (comment.user.toString()!==req.user.id){
             return res.status(403).json({message: "Unauthorized"});
         }
+
+        // delete replies associated with this comment 
+        await Comment.deleteMany({ parentComment: comment._id });
 
         //delete the comment
         await comment.deleteOne();
@@ -93,7 +121,7 @@ export const replyToComment=async(req,res)=>{
         const {content}=req.body;
 
         //find its parent comment
-        const parentComment=await Comment.findById(req.params.id);  //entire document
+        const parentComment=await Comment.findById(req.params.commentId);  //entire document
         if (!parentComment){
             return res.status(404).json({message: "Parent comment not found"});
         }
@@ -107,6 +135,17 @@ export const replyToComment=async(req,res)=>{
         });
 
         await reply.save();
+
+        //Notify parent comment owner
+        if (parentComment.user.toString() !== req.user.id) {
+            await Notification.create({
+                type: "comment",
+                sender: req.user.id,
+                recipient: parentComment.user,
+                post: parentComment.post,
+                comment: reply._id
+            });
+        }
 
         res.status(200).json({
             message: "Replied to comment successfully",
