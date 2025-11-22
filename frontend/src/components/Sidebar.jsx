@@ -24,7 +24,7 @@ const Sidebar=({isOpen, onClose})=>{
     return(
         <div>
             {/* Sidebar container */}
-            <div className={` fixed flex flex-col h-full w-56 z-50 py-4 px-8 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`bg-white fixed top-16 h-[calc(100%-4rem)] flex flex-col  w-56 z-40 py-4 px-8 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`} onClick={(e) => e.stopPropagation()}>
                 <button className="w-full flex items-center mb-4 gap-3 hover:font-semibold hover:cursor-pointer">
                     <House/>
                     <span>Home</span>
