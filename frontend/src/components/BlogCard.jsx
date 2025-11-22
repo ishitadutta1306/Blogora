@@ -27,10 +27,10 @@ const BlogCard=()=>{
                     <p className='text-xs'>Nov 11</p>
 
                     <ThumbsUp className='ml-4 h-5 w-5'/>
-                    <span className='text-xs ml-0.5'>101</span>
+                    <span className='text-xs font-bold ml-0.5'>101</span>
 
                     <MessageCircle className='ml-2 h-5 w-5'/>
-                    <span className='text-xs ml-0.5'>50</span>
+                    <span className='text-xs font-bold ml-0.5'>50</span>
                 </div>
             </div>
 
