@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Sidebar from './Sidebar';
 
 const Navbar=()=>{
-    const [isSidebarOpen, setIsSidebarOpen]=useState(false);
+    const [isSidebarOpen, setIsSidebarOpen]=useState(true);
 
     const toggleSidebar=()=>{
         setIsSidebarOpen(prev=>!prev);
@@ -13,7 +13,7 @@ const Navbar=()=>{
     return(
         <>
             {/* Navbar container */}
-            <nav className='flex justify-between items-center px-8 border-b border-[#F1F1F1]'>
+            <nav className='fixed top-0 left-0 w-full z-50 bg-white flex justify-between items-center px-8 border-b border-[#F1F1F1]'>
                 {/* Left side */}
                 <div className='flex items-center'>
                     <button onClick={toggleSidebar} className='hover:cursor-pointer'>
