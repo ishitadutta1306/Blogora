@@ -1,11 +1,13 @@
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import BlogCard from "../components/BlogCard";
+import NotificationModal from "../components/NotificationModal";
 
 const Homepage=()=>{
     return(
         <>
             <Navbar/>
+            <NotificationModal/>
             <Sidebar/>
 
             <div className="flex justify-center">
