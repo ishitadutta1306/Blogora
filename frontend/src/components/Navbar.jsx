@@ -2,12 +2,18 @@ import { Menu, Search, SquarePen, Bell, CircleUserRound } from 'lucide-react'
 import logo from '../assets/logo.png';
 import { useState } from 'react';
 import Sidebar from './Sidebar';
+import NotificationModal from './NotificationModal';
+
 
 const Navbar=()=>{
     const [isSidebarOpen, setIsSidebarOpen]=useState(true);
-
     const toggleSidebar=()=>{
         setIsSidebarOpen(prev=>!prev);
+    }
+
+    const [isNotificationModalOpen, setIsNotificationModalOpen]=useState(false);
+    const toggleNotificationModal=()=>{
+        setIsNotificationModalOpen(prev=>!prev);
     }
 
     return(
@@ -39,12 +45,13 @@ const Navbar=()=>{
                         <SquarePen/>
                         <span className='font-medium hidden md:inline'>Write</span>
                     </div>
-                    <Bell/>
+                    <Bell onClick={toggleNotificationModal}/>
                     <CircleUserRound/>
                 </div>  
             </nav>
 
             <Sidebar isOpen={isSidebarOpen} onClose={()=>setIsSidebarOpen(false)}/>
+            <NotificationModal isOpen={isNotificationModalOpen} onClose={()=>setIsNotificationModalOpen(false)}/>
         </>
     );
 }
