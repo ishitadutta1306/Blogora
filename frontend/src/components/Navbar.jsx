@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import NotificationModal from './NotificationModal';
-
+import UserProfileModal from './UserProfileModal';
 
 const Navbar=()=>{
     const [isSidebarOpen, setIsSidebarOpen]=useState(true);
@@ -14,6 +14,11 @@ const Navbar=()=>{
     const [isNotificationModalOpen, setIsNotificationModalOpen]=useState(false);
     const toggleNotificationModal=()=>{
         setIsNotificationModalOpen(prev=>!prev);
+    }
+
+    const [isUserProfileModalOpen, setIsUserProfileModalOpen]=useState(true);
+    const toggleUserProfileModal=()=>{
+        setIsUserProfileModalOpen(prev=>!prev);
     }
 
     return(
@@ -46,12 +51,13 @@ const Navbar=()=>{
                         <span className='font-medium hidden md:inline'>Write</span>
                     </div>
                     <Bell onClick={toggleNotificationModal}/>
-                    <CircleUserRound/>
+                    <CircleUserRound onClick={toggleUserProfileModal}/>
                 </div>  
             </nav>
 
             <Sidebar isOpen={isSidebarOpen} onClose={()=>setIsSidebarOpen(false)}/>
             <NotificationModal isOpen={isNotificationModalOpen} onClose={()=>setIsNotificationModalOpen(false)}/>
+            <UserProfileModal isOpen={isUserProfileModalOpen} onClose={()=>setIsUserProfileModalOpen(false)}/>
         </>
     );
 }
