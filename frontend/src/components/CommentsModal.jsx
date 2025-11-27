@@ -8,30 +8,18 @@ const CommentsModal = ({ comments, onClose }) => {
     // Close reply box when clicking outside
     const modalRef = useRef(null);
 
-    // useEffect(() => {
-    //     const handleClickOutside = (e) => {
-    //         if (modalRef.current && !modalRef.current.contains(e.target)) {
-    //             setReplyIndex(null);
-    //         }
-    //     };
-    //     document.addEventListener("mousedown", handleClickOutside);
-    //     return () => document.removeEventListener("mousedown", handleClickOutside);
-    // }, []);
-    // 🔥 NEW: separate reply box ref
-    const replyRef = useRef(null);   // <-- ADDED
+    const replyRef = useRef(null);
 
-    // 🔥 FIXED: Modal outside-click should only close modal (not reply box)
     useEffect(() => {
         const handleModalClose = (e) => {
             if (modalRef.current && !modalRef.current.contains(e.target)) {
-                onClose(); // <-- only closes modal
+                onClose();
             }
         };
         document.addEventListener("mousedown", handleModalClose);
         return () => document.removeEventListener("mousedown", handleModalClose);
     }, []);
 
-    // 🔥 NEW: Close reply box when clicking outside of reply input (NOT modal)
     useEffect(() => {
         const handleReplyOutside = (e) => {
             if (replyRef.current && !replyRef.current.contains(e.target)) {
