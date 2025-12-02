@@ -15,7 +15,7 @@ const LandingPage=()=>{
 
                 {/* Right side */}
                 <div className="flex items-center gap-4 text-sm md:text-base">
-                    <button className="hover:cursor-pointer">🔥Popular</button>
+                    {/* <button className="hover:cursor-pointer">🔥Popular</button> */}
                     <button className="hover:cursor-pointer hover:underline">Log In</button>
                     <button className="bg-[#f7f7f7] border-solid rounded-full px-4 py-2 hover:cursor-pointer">Get Started</button>
                 </div>
