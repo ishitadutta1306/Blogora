@@ -31,7 +31,8 @@ const Navbar=()=>{
                         <Menu className='h-6 w-6'/>
                     </button>
                     <img src={logo} alt='logo' className='w-10 h-10 md:w-16 md:h-16 object-contain'/>
-                    <h1 className='font-bold text-lg md:text-xl'>Blogora</h1>
+                    {/* <h1 className='font-bold text-lg md:text-xl'>Blogora</h1> */}
+                    <h1 className="font-['Dancing_Script'] text-xl md:text-3xl font-extrabold">Blogora</h1>
                 </div>
 
                 {/* Center */}
