@@ -1,8 +1,11 @@
 import backgroundImg from '../assets/landing-page-bg.jpg'
 import logo from '../assets/logo.png'
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom'
 
 const LandingPage=()=>{
+    const navigate=useNavigate();
+
     return(
         <div style={{backgroundImage: `url(${backgroundImg})`}} className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col">
             {/* Navbar */}
@@ -16,8 +19,14 @@ const LandingPage=()=>{
                 {/* Right side */}
                 <div className="flex items-center gap-4 text-sm md:text-base">
                     {/* <button className="hover:cursor-pointer">🔥Popular</button> */}
-                    <button className="hover:cursor-pointer hover:underline">Log In</button>
-                    <button className="bg-[#f7f7f7] border-solid rounded-full px-4 py-2 hover:cursor-pointer">Get Started</button>
+                    <button 
+                        className="hover:cursor-pointer hover:underline"
+                        onClick={()=>navigate('/login')}
+                    >Log In</button>
+                    <button 
+                        className="bg-[#f7f7f7] border-solid rounded-full px-4 py-2 hover:cursor-pointer"
+                        onClick={()=>navigate('/register')}
+                    >Get Started</button>
                 </div>
             </nav>
 
@@ -26,7 +35,10 @@ const LandingPage=()=>{
                 <div className="md:w-2/3 space-y-6">
                     <h1 className="font-['Playfair_Display'] text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-4 leading-tight">Where Stories Find Their Voice</h1>
                     <p className="text-md sm:text-md md:text-xl">Discover thoughtful articles, fresh ideas, and perspectives that inspire curiosity and creativity.</p>
-                    <button className="bg-[#a13ab0] text-white text-lg border-solid rounded-full mt-4 px-6 py-2 hover:cursor-pointer">Start blogging</button>
+                    <button 
+                        className="bg-[#a13ab0] text-white text-lg border-solid rounded-full mt-4 px-6 py-2 hover:cursor-pointer"
+                        onClick={()=>navigate('/register')}
+                    >Start blogging</button>
                 </div>
             </div>
 
