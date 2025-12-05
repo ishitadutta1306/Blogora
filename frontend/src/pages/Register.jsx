@@ -1,9 +1,38 @@
 import { UserRound, UserRoundPlus, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Register=()=>{
+    const [fullName, setFullName]=useState("");
+    const [username, setUsername]=useState("");
+    const [email, setEmail]=useState("");
     const [password, setPassword]=useState("");
     const [showPassword, setShowPassword]=useState(false);
+
+    const navigate=useNavigate();
+    const { login }=useAuth();
+
+    const handleRegister=async()=>{
+        try{
+            //send POST request to backend register route
+            const res=await axios.post("http://localhost:5000/api/users/register",{
+                fullName, username, email, password, 
+                authProvider: "email",
+            });
+
+            //call the login() from AuthContext.jsx
+            // login(res.data.user, res.data.token);   //save the user & token globally
+
+            //navigate user to login page
+            navigate("/login");
+        }
+        catch(err){
+            console.log(err.response?.data);
+            alert(err.response?.data?.message || "Registration failed");
+        }
+    }
     
     return(
         <>
@@ -24,19 +53,37 @@ const Register=()=>{
                         {/* Full name */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <UserRoundPlus/>
-                            <input type="text" placeholder="Full Name" className="w-full outline-none"/>
+                            <input 
+                                type="text" 
+                                placeholder="Full Name" 
+                                className="w-full outline-none"
+                                value={fullName}
+                                onChange={(e)=>setFullName(e.target.value)}
+                            />
                         </div>
 
                         {/* Username */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <UserRound/>
-                            <input type="text" placeholder="Username" className="w-full outline-none"/>
+                            <input 
+                                type="text" 
+                                placeholder="Username" 
+                                className="w-full outline-none"
+                                value={username}
+                                onChange={(e)=>setUsername(e.target.value)}
+                            />
                         </div>
 
                         {/* Email */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <Mail/>
-                            <input type="email" placeholder="Email" className="w-full outline-none"/>
+                            <input 
+                                type="email" 
+                                placeholder="Email" 
+                                className="w-full outline-none"
+                                value={email}
+                                onChange={(e)=>setEmail(e.target.value)}
+                            />
                         </div>
 
                         {/* Password */}
@@ -71,7 +118,10 @@ const Register=()=>{
                         </div>
 
                         {/* Sign up button */}
-                        <button className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg">
+                        <button 
+                            className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg hover:cursor-pointer"
+                            onClick={handleRegister}
+                        >
                             <UserRoundPlus className="h-5 w-5"/>
                             <span>Sign Up</span>
                         </button>
