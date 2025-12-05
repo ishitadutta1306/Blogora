@@ -1,9 +1,36 @@
 import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import axios from 'axios'
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Login=()=>{
+    const [email, setEmail]=useState("");
     const [password, setPassword]=useState("");
     const [showPassword, setShowPassword]=useState(false);
+
+    const navigate=useNavigate();
+    
+    const { login }=useAuth();
+
+    const handleLogin=async()=>{
+        try{
+            //send POST request to backend login route
+            const res=await axios.post("http://localhost:5000/api/users/login",{
+                email, password,
+            });
+
+            //call the login() from AuthContext.jsx
+            login(res.data.user,res.data.token);   //save the user & token globally 
+
+            //navigate user to homepage
+            navigate("/home");
+        }
+        catch(err){
+            console.log(err.response?.data);
+            alert(err.response?.data?.message || "Login failed");
+        }
+    };
 
     return(
         <>
@@ -24,7 +51,13 @@ const Login=()=>{
                         {/* Email */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <Mail/>
-                            <input type="email" placeholder="Email" className="w-full outline-none"/>
+                            <input 
+                                type="email" 
+                                placeholder="Email" 
+                                className="w-full outline-none"
+                                value={email}
+                                onChange={(e)=>setEmail(e.target.value)}
+                            />
                         </div>
 
                         {/* Password */}
@@ -59,14 +92,17 @@ const Login=()=>{
                         </div>
 
                         {/* Login button */}
-                        <button className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg">
+                        <button 
+                            className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg"
+                            onClick={handleLogin}
+                        >
                             <LogIn className="h-5 w-5"/>
-                            <span>Sign Up</span>
+                            <span>Login</span>
                         </button>
 
                         <p className="text-center text-sm">
-                            Don't have an account?{" "}
-                            <a href="/register" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Sign Up</a>
+                            Already have an account?{" "}
+                            <a href="/register" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Login</a>
                         </p>
                     </div>
                 </div>
