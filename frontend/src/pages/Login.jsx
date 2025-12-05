@@ -101,8 +101,8 @@ const Login=()=>{
                         </button>
 
                         <p className="text-center text-sm">
-                            Already have an account?{" "}
-                            <a href="/register" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Login</a>
+                            Don't have an account?{" "}
+                            <a href="/register" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Sign up</a>
                         </p>
                     </div>
                 </div>
