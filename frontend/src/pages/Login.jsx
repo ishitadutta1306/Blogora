@@ -93,7 +93,7 @@ const Login=()=>{
 
                         {/* Login button */}
                         <button 
-                            className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg"
+                            className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg hover:cursor-pointer"
                             onClick={handleLogin}
                         >
                             <LogIn className="h-5 w-5"/>
