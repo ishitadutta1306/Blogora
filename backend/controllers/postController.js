@@ -50,13 +50,14 @@ export const getAllPosts=async(req,res)=>{
             .sort({createdAt: -1})  //latest post 1st
             .populate("author","fullName username profilePic")  //replace object id of author field with the later fields
             .populate("tags","name")
-            .select("title subtitle coverImage createdAt likeCount commentCount");  //return these specific fields
+            .select("title subtitle content coverImage createdAt likeCount commentCount author tags");  //return these specific fields
 
         //create a new array 'formattedPost' where each post object contains only the following field instead of whole document 
         const formattedPost=posts.map((post)=>({
             _id: post._id,
             title: post.title,
             subtitle: post.subtitle,
+            content: post.content,
             coverImage: post.coverImage,
             authorName: post.author?.fullName,
             username: post.author?.username,
