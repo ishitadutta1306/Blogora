@@ -1,4 +1,4 @@
-import { CircleUserRound, ThumbsUp, MessageCircle } from 'lucide-react'
+import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark } from 'lucide-react'
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 
 const BlogCard=({post})=>{
@@ -34,11 +34,13 @@ const BlogCard=({post})=>{
                         day: "2-digit"
                     })}</p>
 
-                    <ThumbsUp className='ml-4 h-5 w-5 hover:cursor-pointer'/>
-                    <span className='text-xs font-bold ml-0.5'>{likeCount}</span>
+                    <ThumbsUp className='ml-6 h-5 w-5 hover:cursor-pointer'/>
+                    <span className='text-xs font-bold ml-1'>{likeCount}</span>
 
-                    <MessageCircle className='ml-2 h-5 w-5 hover:cursor-pointer'/>
-                    <span className='text-xs font-bold ml-0.5'>{commentCount}</span>
+                    <MessageCircle className='ml-3 h-5 w-5 hover:cursor-pointer'/>
+                    <span className='text-xs font-bold ml-1'>{commentCount}</span>
+
+                    <Bookmark className='ml-3 h-5 w-5 hover:cursor-pointer'/>
                 </div>
             </div>
 
