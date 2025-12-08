@@ -12,6 +12,8 @@ const Homepage=()=>{
             try{
                 const res=await axios.get("http://localhost:5000/api/posts");
                 setPosts(res.data);   //array of formatted posts
+
+                console.log("Fetched posts:", res.data); // check slugs
             }
             catch(err){
                 console.error("Error fetching posts: ",err);
@@ -33,7 +35,7 @@ const Homepage=()=>{
                         <p className="font-medium">No posts available</p>
                     ) : (
                         posts.map((post)=>
-                            <BlogCard key={post.id} post={post}/>    
+                            <BlogCard key={post._id} post={post}/>
                         )
                     )}
                 </div>
