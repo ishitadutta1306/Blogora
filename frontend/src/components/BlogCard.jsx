@@ -1,12 +1,14 @@
 import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark } from 'lucide-react'
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
+import { useNavigate } from 'react-router-dom';
 
 const BlogCard=({post})=>{
-    const { title, content, coverImage, authorName, username, profilePic, likeCount, commentCount, createdAt }=post;
+    const navigate=useNavigate();
+    const { title, content, coverImage, authorName, username, profilePic, likeCount, commentCount, createdAt, slug }=post;
 
     return(
         // Card container
-        <div className='w-full md:w-1/3 flex justify-between items-center p-4'>
+        <div onClick={()=>navigate(`/post/${slug}`)} className='w-full md:w-1/3 flex justify-between items-center p-4 hover:cursor-pointer'>
             {/* Left section */}
             <div className='flex flex-col w-2/3'>
                 <div>
