@@ -15,18 +15,24 @@ const UserProfileModal=({isOpen, onClose})=>{
         logout();
         navigate("/login");
     }
+
+    //view profile
+    const goToProfile=()=>{
+        onClose();
+        navigate(`/profile/${user._id}`);
+    }
     
     return(
         <div onClick={onClose} className="fixed inset-0">
             {/* User Profile Modal container */}
-            <div className="w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6 ">
+            <div onClick={(e)=>e.stopPropagation()} className="w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6" >
                 <div className='flex items-center gap-2'>
                     <CircleUserRound className='h-8 w-8'/>
-                    <h2 className="text-lg font-semibold">Ishita Dutta</h2>
+                    <h2 className="text-lg font-semibold">{user.fullName}</h2>
                 </div>
 
                 {/* View Profile */}
-                <a href="" className='ml-10 underline text-gray-500 text-sm'>View Profile</a>
+                <button onClick={goToProfile} className='ml-10 underline text-gray-500 text-sm hover:cursor-pointer'>View Profile</button>
                 <hr className='my-3'/>
 
                 {/* Log out button */}
