@@ -1,11 +1,35 @@
 import { CircleUserRound } from 'lucide-react'
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ProfilePage=()=>{
+    const { id }=useParams();
+    const navigate=useNavigate();
+
     const [activeTab, setActiveTab]=useState("Posts");  // "Posts" | "Followers" | "Following"
+    const [profile, setProfile]=useState(null);
+
+    useEffect(()=>{
+        fetchProfile();
+    },[id]);
+
+    const fetchProfile=async()=>{
+        try{
+            const res=await axios.get(`http://localhost:5000/api/users/profile/${id}`);
+            setProfile(res.data);
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+
+    if (!profile){
+        return <p className="ml-120 mt-30">Loading...</p>;
+    } 
 
     return(
         <>
@@ -18,15 +42,19 @@ const ProfilePage=()=>{
                 <div className='flex gap-6'>
                     {/* Left section: profile pic */}
                     <div className='flex justify-center items-center h-18 w-18 rounded-full bg-gray-100'>
-                        <CircleUserRound className='h-16 w-16'/>
+                        {profile.profilePic ? (
+                            <img src={profile.profilePic} className="h-18 w-18 rounded-full" />
+                        ) : (
+                            <CircleUserRound className='h-16 w-16'/>
+                        )}
                     </div>
 
                     {/* Right section */}
                     <div className='flex flex-col'>
                         {/* name */}
-                        <p className='font-bold text-xl'>Ishita Dutta</p>
+                        <p className='font-bold text-xl'>{profile.fullName}</p>
                         {/* username */}
-                        <p className='font-semibold text-gray-700'>@ishitadutta</p>
+                        <p className='font-semibold text-gray-700'>@{profile.username}</p>
 
                         {/* Stats section */}
                         <div className='flex gap-24 mt-4 pb-4'>
@@ -36,7 +64,7 @@ const ProfilePage=()=>{
                                 
                                 onClick={()=>setActiveTab("Posts")}>
                                     <button>Posts</button>
-                                    <p>10</p>
+                                    <p>{profile.posts.length}</p>
                             </div>
 
                             {/* Followers */}
@@ -45,7 +73,7 @@ const ProfilePage=()=>{
                                 
                                 onClick={()=>setActiveTab("Followers")}>
                                     <button>Followers</button>
-                                    <p>250</p>
+                                    <p>{profile.followers.length}</p>
                             </div>
 
                             {/* Following */}
@@ -54,7 +82,7 @@ const ProfilePage=()=>{
                                 
                                 onClick={()=>setActiveTab("Following")}>
                                     <button>Following</button>
-                                    <p>91</p>
+                                    <p>{profile.following.length}</p>
                             </div>
                         </div>
                     </div>
@@ -62,71 +90,50 @@ const ProfilePage=()=>{
 
                 {/* Lower half: Shows lists of "Posts" OR List of "Followers" with "Follow/Unfollow" button OR List of "Following" with "Unfollow" button */}
                 <div className='w-full pl-24 mt-6'>
-                    {activeTab==="Posts" && (
-                        <div className="w-full flex justify-between items-center">
-                            {/* Left: Blog details */}
-                            <div className="flex flex-col w-2/3 mr-4">
-                                <p className="text-xl font-bold mb-2">Blog Title</p>
-                                <p className="text-sm text-gray-700 line-clamp-3">
-                                    This is the blog excerpt... Lorem ipsum dolor sit amet consectetur 
-                                    adipisicing elit. Officiis sed dolorem facere...
-                                </p>
-                            </div>
-
-                            {/* Right: Image */}
-                            <div className="flex justify-end">
-                                <img 
-                                    src={BlogPlaceholderImage} 
-                                    alt="" 
-                                    className="h-20 w-30 object-cover rounded-lg"
-                                />
-                            </div>
+                    {/* Posts */} 
+                    {activeTab === "Posts" && profile.posts.map(post => (
+                        <div 
+                            key={post._id}
+                            onClick={() => navigate(`/post/${post.slug}`)}
+                            className="flex justify-between items-center mb-5 cursor-pointer"
+                        >
+                        <div className="flex flex-col w-2/3">
+                            <p className="text-xl font-bold">{post.title}</p>
+                            <p className="text-sm text-gray-700 line-clamp-3">{post.content}</p>
                         </div>
-                    )}
 
-                    {activeTab==="Followers" && (
-                        <div className='py-2'>
-                            <div className='flex justify-between items-center py-2'>
-                                {/* Left side */}
-                                <div className='flex items-center gap-3'>
-                                    <div className='flex justify-center items-center h-10 w-10 rounded-full'>
-                                        <CircleUserRound className='h-10 w-10'/>
-                                    </div>
-                                    <div className='flex flex-col'>
-                                        <p className='font-medium'>Harry Potter</p>
-                                        <p className='text-xs text-gray-500'>@harrypotter</p>
-                                    </div>
+                        <img 
+                            src={post.coverImage || BlogPlaceholderImage}
+                            className="h-20 w-30 object-cover rounded-lg"
+                        />
+                        </div>
+                    ))}
+
+                    {/* Followers */}
+                    {activeTab === "Followers" && profile.followers.map(user => (
+                        <div key={user._id} className='flex justify-between py-2'>
+                            <div className='flex gap-3'>
+                                <CircleUserRound />
+                                <div>
+                                    <p>{user.fullName}</p>
+                                    <p className='text-xs text-gray-500'>@{user.username}</p>
                                 </div>
-                                
-                                {/* Right side */} 
-                                <button className='px-3 py-1 bg-black text-white rounded-lg text-sm hover:cursor-pointer'>
-                                    Follow
-                                </button>
                             </div>
                         </div>
-                    )}
+                    ))}
 
-                    {activeTab==="Following" && (
-                        <div className='py-2'>
-                            <div className='flex justify-between items-center py-2'>
-                                {/* Left side */}
-                                <div className='flex items-center gap-3'>
-                                    <div className='flex justify-center items-center h-10 w-10 rounded-full'>
-                                        <CircleUserRound className='h-10 w-10'/>
-                                    </div>
-                                    <div className='flex flex-col'>
-                                        <p className='font-medium'>John Doe</p>
-                                        <p className='text-xs text-gray-500'>@johndoe</p>
-                                    </div>
+                    {/* Following */} 
+                    {activeTab === "Following" && profile.following.map(user => (
+                        <div key={user._id} className='flex justify-between py-2'>
+                            <div className='flex gap-3'>
+                                <CircleUserRound />
+                                <div>
+                                    <p>{user.fullName}</p>
+                                    <p className='text-xs text-gray-500'>@{user.username}</p>
                                 </div>
-                                
-                                {/* Right side */} 
-                                <button className='px-3 py-1 border rounded-lg text-sm hover:cursor-pointer'>
-                                    Unfollow
-                                </button>
                             </div>
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
         </>
