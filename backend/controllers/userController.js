@@ -114,8 +114,8 @@ export const getUserProfile=async(req,res)=>{
         const user=await User.findById(req.params.id)   //id from URL parameter(values)
             //req.params: an object holding all parameters of the route (/:id= {id: ...} 
             .select("-password") //exclude password
-            .populate("followers","username profilePic")   //replace the object ids with the document(record) but only with username & profilePic field 
-            .populate("following","username profilePic")
+            .populate("followers","fullName username profilePic")   //replace the object ids with the document(record) but only with username & profilePic field 
+            .populate("following","fullName username profilePic")
             .populate("posts");     //include all fields of a post's record 
         
         if (!user){
