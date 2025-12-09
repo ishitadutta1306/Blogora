@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react';
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const ProfilePage=()=>{
+    const { user }=useAuth();   //logged-in user
+
     const { id }=useParams();
     const navigate=useNavigate();
 
@@ -30,6 +33,19 @@ const ProfilePage=()=>{
     if (!profile){
         return <p className="ml-120 mt-30">Loading...</p>;
     } 
+
+    const handleFollow=async(targetUserId)=>{
+        try{
+            const token=localStorage.getItem("token");
+
+            await axios.put(`http://localhost:5000/api/users/follow/${targetUserId}`, {}, {headers: { Authorization: `Bearer ${token}`}});
+
+            fetchProfile(); //refresh profile after follow/unfollow 
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
 
     return(
         <>
@@ -110,28 +126,56 @@ const ProfilePage=()=>{
                     ))}
 
                     {/* Followers */}
-                    {activeTab === "Followers" && profile.followers.map(user => (
-                        <div key={user._id} className='flex justify-between py-2'>
-                            <div className='flex gap-3'>
-                                <CircleUserRound />
-                                <div>
-                                    <p>{user.fullName}</p>
-                                    <p className='text-xs text-gray-500'>@{user.username}</p>
+                    {activeTab === "Followers" && profile.followers.map(userItem => (
+                        <div key={userItem._id} className='flex justify-between items-center py-2'>
+                            {/* Left side */}
+                            <div className='flex items-center gap-3'>
+                                <div className='flex justify-center items-center h-10 w-10 rounded-full'>
+                                    {userItem.profilePic ? (
+                                        <img src={userItem.profilePic} className="h-18 w-18 rounded-full" />
+                                    ) : (
+                                        <CircleUserRound className='h-16 w-16'/>
+                                    )}
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='font-medium'>{userItem.fullName}</p>
+                                    <p className='text-xs text-gray-600'>@{userItem.username}</p>
                                 </div>
                             </div>
+
+                            {/* Right side */} 
+                            {userItem._id !== user._id && (
+                                <button onClick={()=>handleFollow(userItem._id)} className='px-3 h-7 bg-black text-white rounded-lg text-sm hover:cursor-pointer'>
+                                    {profile.following.some(f=>f._id===userItem._id) ? "Unfollow" : "Follow"}
+                                </button>
+                            )}
                         </div>
                     ))}
 
                     {/* Following */} 
-                    {activeTab === "Following" && profile.following.map(user => (
-                        <div key={user._id} className='flex justify-between py-2'>
-                            <div className='flex gap-3'>
-                                <CircleUserRound />
-                                <div>
-                                    <p>{user.fullName}</p>
-                                    <p className='text-xs text-gray-500'>@{user.username}</p>
+                    {activeTab === "Following" && profile.following.map(userItem => (
+                        <div key={userItem._id} className='flex justify-between items-center py-2'>
+                            {/* Left side */} 
+                            <div className='flex items-center gap-3'>
+                                <div className='flex justify-center items-center h-10 w-10 rounded-full'>
+                                    {userItem.profilePic ? (
+                                        <img src={userItem.profilePic} className="h-18 w-18 rounded-full" />
+                                    ) : (
+                                        <CircleUserRound className='h-16 w-16'/>
+                                    )}
+                                </div>
+                                <div className='flex flex-col'>
+                                    <p className='font-medium'>{userItem.fullName}</p>
+                                    <p className='text-xs text-gray-600'>@{userItem.username}</p>
                                 </div>
                             </div>
+
+                            {/* Right side */} 
+                            {userItem._id !== user._id && (
+                                <button onClick={()=>handleFollow(userItem._id)} className='px-3 h-7 border rounded-lg text-sm hover:cursor-pointer'>
+                                    Unfollow
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>
