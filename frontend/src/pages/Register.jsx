@@ -14,7 +14,9 @@ const Register=()=>{
     const navigate=useNavigate();
     const { login }=useAuth();
 
-    const handleRegister=async()=>{
+    const handleRegister=async(e)=>{
+        e.preventDefault();
+
         try{
             //send POST request to backend register route
             const res=await axios.post("http://localhost:5000/api/users/register",{
@@ -49,7 +51,7 @@ const Register=()=>{
                     </div>
                     
                     {/* Form */}
-                    <div className="mt-6 space-y-4">
+                    <form className="mt-6 space-y-4" onSubmit={handleRegister}>
                         {/* Full name */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <UserRoundPlus/>
@@ -119,8 +121,8 @@ const Register=()=>{
 
                         {/* Sign up button */}
                         <button 
+                            type="submit"
                             className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg hover:cursor-pointer"
-                            onClick={handleRegister}
                         >
                             <UserRoundPlus className="h-5 w-5"/>
                             <span>Sign Up</span>
@@ -130,7 +132,7 @@ const Register=()=>{
                             Already have an account?{" "}
                             <a href="/login" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Login</a>
                         </p>
-                    </div>
+                    </form>
                 </div>
             </div>
         </>

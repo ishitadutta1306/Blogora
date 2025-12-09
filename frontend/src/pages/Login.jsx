@@ -13,7 +13,9 @@ const Login=()=>{
     
     const { login }=useAuth();
 
-    const handleLogin=async()=>{
+    const handleLogin=async(e)=>{
+        e.preventDefault();    //prevent page reload on pressing Enter 
+
         try{
             //send POST request to backend login route
             const res=await axios.post("http://localhost:5000/api/users/login",{
@@ -47,7 +49,7 @@ const Login=()=>{
                     </div>
 
                     {/* Form */}
-                    <div className="mt-6 space-y-4">
+                    <form className="mt-6 space-y-4" onSubmit={handleLogin}>
                         {/* Email */}
                         <div className="flex items-center px-3 py-2 gap-2 border rounded-lg">
                             <Mail/>
@@ -93,8 +95,8 @@ const Login=()=>{
 
                         {/* Login button */}
                         <button 
+                            type="submit"
                             className="bg-[#a13ab0] text-white w-full flex justify-center items-center gap-1 py-2 rounded-lg hover:cursor-pointer"
-                            onClick={handleLogin}
                         >
                             <LogIn className="h-5 w-5"/>
                             <span>Login</span>
@@ -104,7 +106,7 @@ const Login=()=>{
                             Don't have an account?{" "}
                             <a href="/register" className="text-[#a13ab0] font-medium hover:cursor-pointer hover:underline">Sign up</a>
                         </p>
-                    </div>
+                    </form>
                 </div>
             </div>
         </>
