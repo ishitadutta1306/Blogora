@@ -6,6 +6,7 @@ import Homepage from './pages/Homepage'
 import ProtectedRoute from './components/ProtectedRoute'
 import BlogPage from './pages/BlogPage'
 import ProfilePage from './pages/ProfilePage'
+import CreateBlog from './pages/CreateBlog'
 
 function App() {
 
@@ -27,6 +28,12 @@ function App() {
       <Route path='/post/:slug' element={
           <ProtectedRoute>
             <BlogPage/>
+          </ProtectedRoute>
+        }
+      />
+      <Route path='/create' element={
+          <ProtectedRoute>
+            <CreateBlog/>
           </ProtectedRoute>
         }
       />
