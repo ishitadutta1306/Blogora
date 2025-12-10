@@ -21,9 +21,9 @@ const NotificationModal=({isOpen, onClose})=>{
     ];
 
     return(
-        <div onClick={onClose} className='bg-transparent fixed inset-0 z-60'>
+        <div onClick={onClose} className='fixed inset-0'>
             {/* Notification Modal */} 
-            <div onClick={(e)=>e.stopPropagation()} className=' w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6'>
+            <div onClick={(e)=>e.stopPropagation()} className='w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6'>
                 <h2 className='text-lg font-semibold mb-3'>Notifications</h2>
                 {/* Notifications list */}
                 <div className='space-y-3'>
