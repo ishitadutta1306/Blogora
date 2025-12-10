@@ -4,26 +4,26 @@ import { useNavigate } from 'react-router-dom';
 
 const BlogCard=({post})=>{
     const navigate=useNavigate();
-    const { title, content, coverImage, authorName, username, profilePic, likeCount, commentCount, createdAt, slug }=post;
+    const { title, content, coverImage, authorId, authorName, username, profilePic, likeCount, commentCount, createdAt, slug }=post;
 
     return(
         // Card container
-        <div onClick={()=>navigate(`/post/${slug}`)} className='w-full md:w-1/3 flex justify-between items-center p-4 hover:cursor-pointer'>
+        <div className='w-full md:w-1/3 flex justify-between items-center p-4 hover:cursor-pointer'>
             {/* Left section */}
             <div className='flex flex-col w-2/3'>
                 <div>
                     {/* User details */}
-                    <div className='flex items-center gap-2 mb-2'>
+                    <div onClick={()=>navigate(`/profile/${authorId}`)} className='flex items-center gap-1 mb-2'>
                         {profilePic ? (
                             <img src={profilePic} alt="" className='h-6 w-6 rounded-full'/>
                         ) : (
                             <CircleUserRound className='h-5 w-5'/>
                         )}
-                        <span className='text-sm'>{authorName || username}</span>
+                        <span className='text-sm hover:underline'>{authorName || username}</span>
                     </div>
 
                     {/* Blog details */}
-                    <div className='flex flex-col mr-4'>
+                    <div onClick={()=>navigate(`/post/${slug}`)} className='flex flex-col mr-4'>
                         <p className='text-2xl font-bold mb-2'>{title}</p>
                         <p className='text-md mb-2 line-clamp-3'>{content}</p>
                     </div>
