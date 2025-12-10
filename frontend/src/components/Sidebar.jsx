@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { House, User, Rocket, Bookmark } from "lucide-react";
+import { NavLink } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const Sidebar=({isOpen, onClose})=>{
     const [showMore, setShowMore]=useState(false);
     const [openInterests, setOpenInterests]=useState(false);
+
+    const { user }=useAuth();
 
     const interestCategories=[
         "Programming",
@@ -21,19 +25,23 @@ const Sidebar=({isOpen, onClose})=>{
 
     const visibleCategories=showMore ? interestCategories : interestCategories.slice(0,6); //show 6 categories by default 
 
+    const linkClass=({isActive})=>
+        `w-full flex items-center mb-4 gap-3 hover:font-semibold hover:cursor-pointer ${isActive ? "font-bold" : "text-black"
+    }`;
+
     return(
         <div>
             {/* Sidebar container */}
             <div className={`bg-white fixed top-16 h-[calc(100%-4rem)] flex flex-col  w-56 z-40 py-4 px-8 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`} onClick={(e) => e.stopPropagation()}>
-                <button className="w-full flex items-center mb-4 gap-3 hover:font-semibold hover:cursor-pointer">
+                <NavLink to="/home" className={linkClass}>
                     <House/>
                     <span>Home</span>
-                </button>
+                </NavLink>
 
-                <button className="w-full flex items-center mb-4 gap-3 hover:font-semibold hover:cursor-pointer">
+                <NavLink to={`/profile/${user?._id}`} className={linkClass}>
                     <User/>
                     <span>Profile</span>
-                </button>
+                </NavLink>
 
                 {/* Interests dropdown */}
                 <div>
@@ -56,12 +64,14 @@ const Sidebar=({isOpen, onClose})=>{
                     </div>
                 </div>
 
-                {/* Saved Posts */}
+                {/* Divider */}
                 <div className="mt-6 -mx-8 pt-4 border-t border-[#dedede]"></div>
-                <button className="w-full flex items-center gap-3 hover:font-semibold hover:cursor-pointer">
+
+                {/* Saved Posts */}
+                <NavLink to="/saved" className={linkClass}>
                     <Bookmark/>
                     <span>Saved Posts</span>
-                </button>
+                </NavLink>
             </div>
         </div>
     );
