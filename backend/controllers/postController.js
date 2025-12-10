@@ -59,9 +59,12 @@ export const getAllPosts=async(req,res)=>{
             subtitle: post.subtitle,
             content: post.content,
             coverImage: post.coverImage,
+
+            authorId: post.author?._id,
             authorName: post.author?.fullName,
             username: post.author?.username,
             profilePic: post.author?.profilePic,
+            
             createdAt: post.createdAt,
             likeCount: post.likeCount,
             commentCount: post.commentCount,
