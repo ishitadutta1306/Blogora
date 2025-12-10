@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from './Sidebar';
 import NotificationModal from './NotificationModal';
 import UserProfileModal from './UserProfileModal';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar=()=>{
     const [isSidebarOpen, setIsSidebarOpen]=useState(true);
@@ -14,12 +15,16 @@ const Navbar=()=>{
     const [isNotificationModalOpen, setIsNotificationModalOpen]=useState(false);
     const toggleNotificationModal=()=>{
         setIsNotificationModalOpen(prev=>!prev);
+        setIsUserProfileModalOpen(false);
     }
 
-    const [isUserProfileModalOpen, setIsUserProfileModalOpen]=useState(true);
+    const [isUserProfileModalOpen, setIsUserProfileModalOpen]=useState(false);
     const toggleUserProfileModal=()=>{
         setIsUserProfileModalOpen(prev=>!prev);
+        setIsNotificationModalOpen(false);
     }
+
+    const navigate=useNavigate();
 
     return(
         <>
@@ -30,9 +35,12 @@ const Navbar=()=>{
                     <button onClick={toggleSidebar} className='hover:cursor-pointer'>
                         <Menu className='h-6 w-6'/>
                     </button>
-                    <img src={logo} alt='logo' className='w-10 h-10 md:w-16 md:h-16 object-contain'/>
-                    {/* <h1 className='font-bold text-lg md:text-xl'>Blogora</h1> */}
-                    <h1 className="font-['Dancing_Script'] text-xl md:text-3xl font-extrabold">Blogora</h1>
+
+                    <div onClick={()=>navigate("/home")} className='flex items-center hover:cursor-pointer'>
+                        <img src={logo} alt='logo' className='w-10 h-10 md:w-16 md:h-16 object-contain'/>
+                        {/* <h1 className='font-bold text-lg md:text-xl'>Blogora</h1> */}
+                        <h1 className="font-['Dancing_Script'] text-xl md:text-3xl font-extrabold">Blogora</h1>
+                    </div>
                 </div>
 
                 {/* Center */}
@@ -47,7 +55,7 @@ const Navbar=()=>{
 
                 {/* Right side */}
                 <div className='flex items-center gap-4 [&>*]:cursor-pointer'>   {/* [&>*]:apply cursor-pointer to all children */}
-                    <div className='flex items-center gap-1'>
+                    <div onClick={()=>navigate("/create")} className='flex items-center gap-1'>
                         <SquarePen/>
                         <span className='font-medium hidden md:inline'>Write</span>
                     </div>
