@@ -11,9 +11,15 @@ const Homepage=()=>{
         const fetchPosts=async()=>{
             try{
                 const res=await axios.get("http://localhost:5000/api/posts");
-                setPosts(res.data);   //array of formatted posts
 
-                console.log("Fetched posts:", res.data); // check slugs
+                //get logged-in user from localStorage
+                const loggedInUser=JSON.parse(localStorage.getItem("user"));
+
+                //filter out user's own posts
+                const filteredPosts=loggedInUser ? res.data.filter(post=>post.authorId!==loggedInUser._id) : res.data;
+                setPosts(filteredPosts);   //array of formatted posts
+
+                console.log("Fetched posts:",filteredPosts); // check slugs
             }
             catch(err){
                 console.error("Error fetching posts: ",err);
