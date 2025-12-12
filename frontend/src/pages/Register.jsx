@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Register=()=>{
     const [fullName, setFullName]=useState("");
@@ -27,12 +28,14 @@ const Register=()=>{
             //call the login() from AuthContext.jsx
             // login(res.data.user, res.data.token);   //save the user & token globally
 
+            toast.success("Registered successfully!");
+
             //navigate user to login page
             navigate("/login");
         }
         catch(err){
             console.log(err.response?.data);
-            alert(err.response?.data?.message || "Registration failed");
+            toast.error(err.response?.data?.message || "Signup failed!");
         }
     }
     

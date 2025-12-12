@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Login=()=>{
     const [email, setEmail]=useState("");
@@ -25,12 +26,14 @@ const Login=()=>{
             //call the login() from AuthContext.jsx
             login(res.data.user,res.data.token);   //save the user & token globally 
 
+            toast.success("Logged in successfully!");
+
             //navigate user to homepage
             navigate("/home");
         }
         catch(err){
             console.log(err.response?.data);
-            alert(err.response?.data?.message || "Login failed");
+            toast.error(err.response?.data?.message || "Login failed!");
         }
     };
 
