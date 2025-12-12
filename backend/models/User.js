@@ -76,6 +76,12 @@ const userSchema=new mongoose.Schema(
                 ref: "Post",
             },
         ],
+        bookmarks: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Post",
+            }
+        ],
         likedPosts: [
             {
                 type: mongoose.Schema.Types.ObjectId,
