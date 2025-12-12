@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import  { Toaster } from 'react-hot-toast'
 import LandingPage from './pages/LandingPage'
 import Register from './pages/Register'
 import Login from './pages/Login'
@@ -7,37 +8,48 @@ import ProtectedRoute from './components/ProtectedRoute'
 import BlogPage from './pages/BlogPage'
 import ProfilePage from './pages/ProfilePage'
 import CreateBlog from './pages/CreateBlog'
+import SavedPosts from './pages/SavedPosts'
 
 function App() {
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path='/' element={<LandingPage/>}/>
-      <Route path='/register' element={<Register/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/profile/:id' element={<ProfilePage/>}/>
+    <>
+      <Toaster position="bottom-right" reverseOrder={false}/>
 
-      {/* Protected routes */}
-      <Route path='/home' element={
-          <ProtectedRoute>
-            <Homepage/>
-          </ProtectedRoute>
-        }
-      />
-      <Route path='/post/:slug' element={
-          <ProtectedRoute>
-            <BlogPage/>
-          </ProtectedRoute>
-        }
-      />
-      <Route path='/create' element={
-          <ProtectedRoute>
-            <CreateBlog/>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+      <Routes>
+        {/* Public routes */}
+        <Route path='/' element={<LandingPage/>}/>
+        <Route path='/register' element={<Register/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/profile/:id' element={<ProfilePage/>}/>
+
+        {/* Protected routes */}
+        <Route path='/home' element={
+            <ProtectedRoute>
+              <Homepage/>
+            </ProtectedRoute>
+          }
+        />
+        <Route path='/post/:slug' element={
+            <ProtectedRoute>
+              <BlogPage/>
+            </ProtectedRoute>
+          }
+        />
+        <Route path='/create' element={
+            <ProtectedRoute>
+              <CreateBlog/>
+            </ProtectedRoute>
+          }
+        />
+        <Route path='/saved' element={
+            <ProtectedRoute>
+              <SavedPosts/>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </>
   )
 }
 
