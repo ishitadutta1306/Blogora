@@ -183,3 +183,36 @@ export const deletePost=async(req,res)=>{
         res.status(500).json({message: "Server error"});
     }
 }
+
+// Toggle Bookmark (Add/Remove)
+export const toggleBookmark=async(req,res)=>{
+    try {
+        const postId=req.params.id;
+        const userId=req.user.id;
+
+        const user=await User.findById(userId);
+
+        if (!user){
+            return res.status(404).json({ message: "User not found" });
+        } 
+
+        const alreadyBookmarked=user.bookmarks.includes(postId);
+
+        if (alreadyBookmarked) {
+            //remove bookmark
+            user.bookmarks.pull(postId);
+            await user.save();
+            return res.json({ bookmarked: false, message: "Bookmark removed" });
+        } 
+        else {
+            //add bookmark
+            user.bookmarks.push(postId);
+            await user.save();
+            return res.json({ bookmarked: true, message: "Post bookmarked" });
+        }
+    } 
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};

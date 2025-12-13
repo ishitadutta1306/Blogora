@@ -458,3 +458,33 @@ export const searchUsers=async(req,res)=>{
         res.status(500).json({message: "Server error"});
     }
 }
+
+//Get all bookmarked posts
+export const getBookmarks=async(req,res)=>{
+    try {
+        const user=await User.findById(req.params.id).populate({path: "bookmarks",
+            populate: { path: "author", select: "fullName username profilePic" }
+        });
+
+        if (!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const posts=await Promise.all(
+        user.bookmarks.map(async (post)=>{
+            const formattedPost=post.toObject();
+            formattedPost.likeCount=post.likes?.length || 0;
+            formattedPost.commentCount=post.comments?.length || 0;
+            formattedPost.bookmarked=true;
+            return formattedPost;
+        }));
+
+        res.json(posts);
+
+        res.status(200).json(formattedPosts);
+    } 
+    catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error"});
+    }
+};
