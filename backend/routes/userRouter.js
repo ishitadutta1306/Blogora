@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, getUserProfile, updateUserProfile, changePassword, forgotPassword, resetPassword, toggleFollowUser, fetchFollowers, fetchFollowing, fetchPostCount, deleteAccount, searchUsers } from '../controllers/userController.js';
+import { registerUser, loginUser, getUserProfile, updateUserProfile, changePassword, forgotPassword, resetPassword, toggleFollowUser, fetchFollowers, fetchFollowing, fetchPostCount, deleteAccount, searchUsers, getBookmarks } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 //create a router object
@@ -14,6 +14,7 @@ router.post("/reset-password/:token",resetPassword);
 router.get("/search",searchUsers);
 
 //protected routes:
+router.get("/:id/bookmarks",protect,getBookmarks);
 router.put("/update",protect,updateUserProfile);
 router.put("/change-password",protect,changePassword);
 router.put("/follow/:id",protect,toggleFollowUser);
@@ -23,6 +24,7 @@ router.get("/following",protect,fetchFollowing);
 router.get("/following/:id",protect,fetchFollowing);
 router.get("/posts-count",protect,fetchPostCount);
 router.get("/posts-count/:id",protect,fetchPostCount);
+// router.get("/:id/bookmarks",protect,getBookmarks);
 router.delete("/delete",protect,deleteAccount);
 
 export default router;
