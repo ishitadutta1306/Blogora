@@ -1,10 +1,50 @@
 import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark } from 'lucide-react'
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useState } from "react";
 
 const BlogCard=({post})=>{
     const navigate=useNavigate();
     const { title, content, coverImage, authorId, authorName, username, profilePic, likeCount, commentCount, createdAt, slug }=post;
+
+    const [bookmarked, setBookmarked]=useState(post.isBookmarked || false);
+
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    const isBookmarked = loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
+
+    const toggleBookmark=async()=>{
+        try {
+            const token=localStorage.getItem("token");
+
+            const res=await axios.put(`http://localhost:5000/api/posts/${post._id}/bookmark`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            //update localStorage user
+            const storedUser=JSON.parse(localStorage.getItem("user"));
+
+            if (res.data.bookmarked){
+                storedUser.bookmarks.push(post._id);
+                toast.success("Added to bookmarks! ⭐");
+            } 
+            else{
+                storedUser.bookmarks=storedUser.bookmarks.filter(id=>id!==post._id);
+                toast("Removed from bookmarks! ❌");
+            }
+
+            localStorage.setItem("user", JSON.stringify(storedUser));
+            setBookmarked(res.data.bookmarked);
+        } 
+        catch (err) {
+            toast.error("Bookmark failed!");
+            console.error(err);
+        }
+    };
 
     return(
         // Card container
@@ -42,7 +82,7 @@ const BlogCard=({post})=>{
                     <MessageCircle className='ml-3 h-5 w-5 hover:cursor-pointer'/>
                     <span className='text-xs font-bold ml-1'>{commentCount}</span>
 
-                    <Bookmark className='ml-3 h-5 w-5 hover:cursor-pointer'/>
+                    <Bookmark onClick={toggleBookmark} className={`ml-3 h-5 w-5 cursor-pointer transition-colors ${bookmarked ? "fill-black text-black" : "text-black"}`}/>
                 </div>
             </div>
 
