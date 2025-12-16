@@ -14,7 +14,21 @@ const BlogCard=({post})=>{
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     const isBookmarked = loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
 
-    const toggleBookmark=async()=>{
+    const [liked, setLiked] = useState(post.isLiked);
+    const [likes, setLikes] = useState(post.likeCount);
+
+    const toggleLike=async (e)=>{
+        const token=localStorage.getItem("token");
+
+        const res=await axios.post(`http://localhost:5000/api/likes/post/${post._id}`, {},{ 
+            headers: { Authorization: `Bearer ${token}` } 
+        });
+
+        setLiked(res.data.liked);
+        setLikes(res.data.likeCount);
+    };
+
+    const toggleBookmark=async(e)=>{
         try {
             const token=localStorage.getItem("token");
 
@@ -76,8 +90,8 @@ const BlogCard=({post})=>{
                         day: "2-digit"
                     })}</p>
 
-                    <ThumbsUp className='ml-6 h-5 w-5 hover:cursor-pointer'/>
-                    <span className='text-xs font-bold ml-1'>{likeCount}</span>
+                    <ThumbsUp onClick={toggleLike} className={`ml-6 h-5 w-5 hover:cursor-pointer ${liked ? "fill-black" : ""}`}/>
+                    <span className='text-xs font-bold ml-1'>{likes}</span>
 
                     <MessageCircle className='ml-3 h-5 w-5 hover:cursor-pointer'/>
                     <span className='text-xs font-bold ml-1'>{commentCount}</span>
