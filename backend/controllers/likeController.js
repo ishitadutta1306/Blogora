@@ -1,5 +1,6 @@
 import Post from '../models/Post.js'
 import Comment from '../models/Comment.js'
+import Notification from "../models/Notification.js";
 
 //Like or unlike a post
 export const toggleLikePost=async(req,res)=>{
@@ -20,7 +21,7 @@ export const toggleLikePost=async(req,res)=>{
             post.likes.push(req.user.id);
 
             //create notification only if the liker is not the post owner
-            if (post.user.toString() !== req.user.id) {
+            if (post.author.toString() !== req.user.id) {
                 await Notification.create({
                     type: "like",
                     sender: req.user.id,
@@ -77,3 +78,14 @@ export const toggleLikeComment=async(req,res)=>{
         res.status(500).json({message: "Server error"});
     }
 }
+
+//Get users who liked a post (for Like Modal)
+export const getPostLikes=async(req,res)=>{
+    const post=await Post.findById(req.params.postId).populate("likes","username profilePic");
+
+    if (!post){
+        return res.status(404).json({ message: "Post not found" });
+    } 
+
+    res.json(post.likes);
+};
