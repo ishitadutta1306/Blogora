@@ -3,15 +3,19 @@ import Sidebar from "../components/Sidebar"
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import { CircleUserRound, Dot, ThumbsUp, MessageCircle } from 'lucide-react'
 import { useState, useEffect } from "react"
+import LikesModal from "../components/LikesModal"
 import CommentsModal from "../components/CommentsModal"
 import axios from "axios"
 import { useParams } from "react-router-dom"
 
-const BlogPage=()=>{
+const BlogPage=({postId})=>{
     const { slug }=useParams();
+
     const [post, setPost]=useState(null);
     const [loading, setLoading]=useState(true);
+
     const [showComments, setShowComments]=useState(false);
+    const [showLikes, setShowLikes]=useState(false);
 
     useEffect(()=>{
         const fetchPost=async()=>{
@@ -74,7 +78,10 @@ const BlogPage=()=>{
                     {/* Action group */}
                     <div className='flex items-center mb-4'>
                         <ThumbsUp className='h-6 w-6 cursor-pointer'/>
-                        <span className='text-sm font-bold ml-1'>{post.likeCount}</span>
+                        <span 
+                            onClick={()=>setShowLikes(true)}
+                            className='text-sm font-bold ml-1 hover:cursor-pointer'>{post.likeCount}
+                        </span>
 
                         <button onClick={()=>setShowComments(true)} className="hover:cursor-pointer">
                             <MessageCircle className='ml-2 h-6 w-6'/>
@@ -97,7 +104,6 @@ const BlogPage=()=>{
                             <img src={post.coverImage || BlogPlaceholderImage} alt="" className='h-full object-cover rounded-lg'/>
                         </div>
                     )}
-                    
 
                     {/* Blog Content */}
                     <div>
@@ -106,9 +112,16 @@ const BlogPage=()=>{
                 </div>
             </div>
 
+            {showLikes && (
+                <LikesModal 
+                    comments={post.comments} 
+                    onClose={() => setShowLikes(false)} 
+                />
+            )}
+
             {showComments && (
                 <CommentsModal 
-                    comments={post.comments}
+                    users={post.likes}
                     onClose={() => setShowComments(false)}
                 />
             )}
