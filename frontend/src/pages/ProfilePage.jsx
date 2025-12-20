@@ -115,7 +115,9 @@ const ProfilePage=()=>{
                         >
                         <div className="flex flex-col w-2/3">
                             <p className="text-xl font-bold">{post.title}</p>
-                            <p className="text-sm text-gray-700 line-clamp-3">{post.content}</p>
+                            <p className="text-sm text-gray-700 line-clamp-3">
+                                {post.content.replace(/<[^>]+>/g, "")}
+                            </p>
                         </div>
 
                         <img 
