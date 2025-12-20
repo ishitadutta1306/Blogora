@@ -25,7 +25,7 @@ const UserProfileModal=({isOpen, onClose})=>{
     return(
         <div onClick={onClose} className="fixed inset-0">
             {/* User Profile Modal container */}
-            <div onClick={(e)=>e.stopPropagation()} className="w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6" >
+            <div onClick={(e)=>e.stopPropagation()} className="bg-white w-72 p-4 rounded-xl shadow-lg absolute top-20 right-6" >
                 <div className='flex items-center gap-2'>
                     <CircleUserRound className='h-8 w-8'/>
                     <h2 className="text-lg font-semibold">{user.fullName}</h2>
