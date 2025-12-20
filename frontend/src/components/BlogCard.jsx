@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useState } from "react";
+import CommentsModal from './CommentsModal';
 
 const BlogCard=({post})=>{
     const navigate=useNavigate();
@@ -16,6 +17,9 @@ const BlogCard=({post})=>{
 
     const [liked, setLiked] = useState(post.isLiked);
     const [likes, setLikes] = useState(post.likeCount);
+
+    const [showComments, setShowComments] = useState(false);
+    const [commentCountState, setCommentCountState] = useState(commentCount);
 
     const toggleLike=async (e)=>{
         const token=localStorage.getItem("token");
@@ -79,7 +83,9 @@ const BlogCard=({post})=>{
                     {/* Blog details */}
                     <div onClick={()=>navigate(`/post/${slug}`)} className='flex flex-col mr-4'>
                         <p className='text-2xl font-bold mb-2'>{title}</p>
-                        <p className='text-md mb-2 line-clamp-3'>{content}</p>
+                        <p className="text-md mb-2 line-clamp-3">
+                            {content.replace(/<[^>]+>/g, "")}
+                        </p>
                     </div>
                 </div>
 
@@ -93,8 +99,8 @@ const BlogCard=({post})=>{
                     <ThumbsUp onClick={toggleLike} className={`ml-6 h-5 w-5 hover:cursor-pointer ${liked ? "fill-black" : ""}`}/>
                     <span className='text-xs font-bold ml-1'>{likes}</span>
 
-                    <MessageCircle className='ml-3 h-5 w-5 hover:cursor-pointer'/>
-                    <span className='text-xs font-bold ml-1'>{commentCount}</span>
+                    <MessageCircle onClick={() => setShowComments(true)} className='ml-3 h-5 w-5 hover:cursor-pointer'/>
+                    <span className='text-xs font-bold ml-1'>{commentCountState}</span>
 
                     <Bookmark onClick={toggleBookmark} className={`ml-3 h-5 w-5 cursor-pointer transition-colors ${bookmarked ? "fill-black text-black" : "text-black"}`}/>
                 </div>
@@ -104,6 +110,16 @@ const BlogCard=({post})=>{
             <div className='h-1/2 w-1/3 flex justify-end items-center'>
                 <img src={coverImage || BlogPlaceholderImage} alt="" className='object-cover rounded-lg'/>
             </div>
+
+            {showComments && (
+                <CommentsModal
+                    postId={post._id}
+                    onClose={() => setShowComments(false)}
+                    onCommentAdded={() => {
+                        setCommentCountState(prev => prev + 1);
+                    }}
+                />
+            )}
         </div>
     );
 }

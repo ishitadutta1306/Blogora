@@ -8,30 +8,63 @@ import CommentsModal from "../components/CommentsModal"
 import axios from "axios"
 import { useParams } from "react-router-dom"
 
-const BlogPage=({postId})=>{
+const BlogPage=()=>{
     const { slug }=useParams();
 
     const [post, setPost]=useState(null);
+
+    const [liked, setLiked] = useState(false);
+    const [likes, setLikes] = useState(0);
+
     const [loading, setLoading]=useState(true);
 
     const [showComments, setShowComments]=useState(false);
     const [showLikes, setShowLikes]=useState(false);
 
+    const [selectedPost, setSelectedPost] = useState(null);
+
     useEffect(()=>{
         const fetchPost=async()=>{
-            try{
-                const res=await axios.get(`http://localhost:5000/api/posts/${slug}`);
+            try {
+                //include proper slug handling and populate author/tags
+                const res=await axios.get(`http://localhost:5000/api/posts/${slug}`,
+                    {
+                        headers:{
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }
+                );
                 setPost(res.data);
-            }
-            catch(err){
-                console.error("Error fetching post: ",err);
-            }
-            finally{
+                setLiked(res.data.isLiked || false);
+                setLikes(res.data.likeCount || 0);
+            } 
+            catch (err) {
+                console.error("Error fetching post: ", err); 
+            } 
+            finally {
                 setLoading(false);
             }
         }
         fetchPost();
     },[slug]);
+
+    const toggleLike = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await axios.post(`http://localhost:5000/api/likes/post/${post._id}`, {},
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            setLiked(res.data.liked);
+            setLikes(res.data.likeCount);
+        } 
+        catch (err) {
+            console.error("Like failed:", err);
+        }
+    };
 
     if (loading){
         return <p className="pt-20 text-center">Loading...</p>;
@@ -40,6 +73,13 @@ const BlogPage=({postId})=>{
     if (!post){
         return <p className="pt-20 text-center">Post not found</p>;
     }
+
+    const handleCommentAdded = () => {
+        setPost(prev => ({
+            ...prev,
+            commentCount: prev.commentCount + 1
+        }));
+    };
 
     return(
         <>
@@ -77,13 +117,17 @@ const BlogPage=({postId})=>{
 
                     {/* Action group */}
                     <div className='flex items-center mb-4'>
-                        <ThumbsUp className='h-6 w-6 cursor-pointer'/>
-                        <span 
-                            onClick={()=>setShowLikes(true)}
-                            className='text-sm font-bold ml-1 hover:cursor-pointer'>{post.likeCount}
+                        <ThumbsUp onClick={toggleLike} className={`h-6 w-6 cursor-pointer ${liked ? "fill-black" : ""}`}/>
+
+                        <span onClick={() => setShowLikes(true)} className="text-sm font-bold ml-1 hover:cursor-pointer">
+                            {likes}
                         </span>
 
-                        <button onClick={()=>setShowComments(true)} className="hover:cursor-pointer">
+                        <button onClick={() => {
+                            setSelectedPost(post);
+                            setShowComments(true);
+                        }}
+                            className="hover:cursor-pointer">
                             <MessageCircle className='ml-2 h-6 w-6'/>
                         </button>
                         <span className='text-sm font-bold ml-1'>{post.commentCount}</span>
@@ -91,7 +135,7 @@ const BlogPage=({postId})=>{
 
                     {/* Topics tags */}
                     <div className="flex items-center mb-4 hover:cursor-pointer">
-                        {post.tags.map((tag,index)=>(
+                        {post.tags?.map((tag,index)=>(
                             <span key={index} className="bg-gray-200 rounded-full px-2 py-1 mr-2 text-xs font-medium">
                                 {tag.name}
                             </span>
@@ -107,22 +151,26 @@ const BlogPage=({postId})=>{
 
                     {/* Blog Content */}
                     <div>
-                        <p className="text-md whitespace-pre-wrap">{post.content}</p>
+                        <div
+                            className="max-w-none"
+                            dangerouslySetInnerHTML={{ __html: post.content }}
+                        />
                     </div>
                 </div>
             </div>
 
             {showLikes && (
                 <LikesModal 
-                    comments={post.comments} 
+                    postId={post._id} 
                     onClose={() => setShowLikes(false)} 
                 />
             )}
 
             {showComments && (
-                <CommentsModal 
-                    users={post.likes}
+                <CommentsModal
+                    postId={post._id}
                     onClose={() => setShowComments(false)}
+                    onCommentAdded={handleCommentAdded}
                 />
             )}
         </>

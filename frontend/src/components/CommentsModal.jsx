@@ -1,9 +1,15 @@
 import { CircleUserRound, SendHorizontal } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 
-const CommentsModal=({ comments=[], onClose })=>{
-    const [replyIndex, setReplyIndex]=useState(null);
+const CommentsModal=({ postId, onClose, onCommentAdded })=>{
+    const [comments, setComments] = useState([]);
     const [newComment, setNewComment]=useState("");
+
+    const [replyIndex, setReplyIndex]=useState(null);
+    const [replyText, setReplyText] = useState("");
+
+    const token = localStorage.getItem("token");
 
     // Close modal box when clicking outside
     const modalRef=useRef(null);
@@ -28,6 +34,75 @@ const CommentsModal=({ comments=[], onClose })=>{
         document.addEventListener("mousedown", handleReplyOutside);
         return () => document.removeEventListener("mousedown", handleReplyOutside);
     }, []);
+
+    //Fetch comments
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5000/api/comments/${postId}`)  //<-fix!
+                setComments(res.data)
+            } 
+            catch (err) {
+                console.error("Fetch comments failed", err)
+            }
+        }
+        fetchComments();
+    }, [postId]);
+
+    //Add comment
+    const handleAddComment=async()=>{
+        if (!newComment.trim()){
+            return;
+        }
+
+        try {
+            const res=await axios.post(`http://localhost:5000/api/comments`,  //<- fix route
+                {
+                    post: postId,  
+                    content: newComment
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            //Update comments list in modal
+            setComments(prev => [res.data, ...prev]);
+
+            //Notify parent (BlogCard / BlogPage)
+            onCommentAdded?.();
+
+            //Clear input
+            setNewComment("");
+        } 
+        catch (err) {
+            console.error("Add comment failed", err)
+        }
+    }
+
+    //Add reply
+    const handleReply=async(commentId)=>{
+        if (!replyText.trim()){
+            return;
+        } 
+
+        try {
+            const res = await axios.post(`http://localhost:5000/api/comments/reply/${commentId}`, //<-fix route
+                { content: replyText },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            setComments(prev => [res.data, ...prev]);
+            onCommentAdded?.();
+            setReplyIndex(null);
+            setReplyText("");
+        }
+        catch (err) {
+            console.error("Reply failed", err)
+        }
+    }
 
     return (
         <div className="fixed inset-0  flex justify-center items-center z-50 bg-black/40">
@@ -71,11 +146,15 @@ const CommentsModal=({ comments=[], onClose })=>{
                             <div ref={replyRef} className="relative ml-7 mt-2">
                                 <input
                                     type="text"
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
                                     placeholder="Write a reply..."
                                     className="w-full border rounded-lg px-3 py-1.5 pr-10 text-sm"
                                 />
-                                <button className="absolute right-2 top-1/2 -translate-y-1/2">
-                                    <SendHorizontal className="h-5 w-5 hover:cursor-pointer"/>
+                                <button 
+                                    onClick={() => handleReply(comment._id)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2">
+                                        <SendHorizontal onClick={handleAddComment} className="h-5 w-5 hover:cursor-pointer"/>
                                 </button>
                             </div>
                         )}
@@ -91,8 +170,10 @@ const CommentsModal=({ comments=[], onClose })=>{
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                     />
-                    <button className="absolute right-2 top-1/2 -translate-y-1/2">
-                        <SendHorizontal className="h-5 w-5 hover:cursor-pointer"/>
+                    <button 
+                        onClick={handleAddComment} 
+                        className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <SendHorizontal className="h-5 w-5 hover:cursor-pointer"/>
                     </button>
                 </div>
             </div>

@@ -1,6 +1,26 @@
 import { CircleUserRound } from 'lucide-react'
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const LikesModal=({users=[], onClose})=>{
+const LikesModal=({postId, onClose})=>{
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const fetchLikes = async () => {
+            const token = localStorage.getItem("token");
+
+            const res = await axios.get(`http://localhost:5000/api/likes/post/${postId}/likes`,
+                {
+                headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            setUsers(res.data);
+        };
+
+        fetchLikes();
+    }, [postId]);
+
     return (
         <>
             <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40">
