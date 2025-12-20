@@ -16,7 +16,7 @@ const Homepage=()=>{
                 const loggedInUser=JSON.parse(localStorage.getItem("user"));
 
                 //filter out user's own posts
-                const filteredPosts=loggedInUser ? res.data.filter(post=>post.authorId!==loggedInUser._id) : res.data;
+                const filteredPosts=loggedInUser ? res.data.filter(post=>String(post.authorId)!==String(loggedInUser._id)) : res.data;
                 setPosts(filteredPosts);   //array of formatted posts
 
                 console.log("Fetched posts:",filteredPosts); // check slugs
