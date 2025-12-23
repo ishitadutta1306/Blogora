@@ -1,4 +1,4 @@
-import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark } from 'lucide-react'
+import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark, Ellipsis } from 'lucide-react'
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
@@ -12,14 +12,14 @@ const BlogCard=({post})=>{
 
     const [bookmarked, setBookmarked]=useState(post.isBookmarked || false);
 
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    const isBookmarked = loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
+    const loggedInUser=JSON.parse(localStorage.getItem("user"));
+    const isBookmarked=loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
 
-    const [liked, setLiked] = useState(post.isLiked);
-    const [likes, setLikes] = useState(post.likeCount);
+    const [liked, setLiked]=useState(post.isLiked);
+    const [likes, setLikes]=useState(post.likeCount);
 
-    const [showComments, setShowComments] = useState(false);
-    const [commentCountState, setCommentCountState] = useState(commentCount);
+    const [showComments, setShowComments]=useState(false);
+    const [commentCountState, setCommentCountState]=useState(commentCount);
 
     const toggleLike=async (e)=>{
         const token=localStorage.getItem("token");
