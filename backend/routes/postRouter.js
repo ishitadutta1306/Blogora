@@ -11,7 +11,7 @@ router.get("/:slug",getPostBySlug);
 
 //protected routes:
 router.post("/",protect,upload.single("image"), createPost);
-router.put("/:id",protect,updatePost);
+router.put("/:id", protect, upload.single("image"), updatePost);
 router.delete("/:id",protect,deletePost);
 router.put("/:id/bookmark",protect,toggleBookmark);
 
