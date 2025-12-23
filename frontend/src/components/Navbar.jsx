@@ -2,7 +2,7 @@ import { Menu, Search, SquarePen, Bell, CircleUserRound } from 'lucide-react'
 import logo from '../assets/logo.png';
 import { useState } from 'react';
 import Sidebar from './Sidebar';
-import NotificationModal from './NotificationModal';
+// import NotificationModal from './NotificationModal';
 import UserProfileModal from './UserProfileModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,11 +12,11 @@ const Navbar=()=>{
         setIsSidebarOpen(prev=>!prev);
     }
 
-    const [isNotificationModalOpen, setIsNotificationModalOpen]=useState(false);
-    const toggleNotificationModal=()=>{
-        setIsNotificationModalOpen(prev=>!prev);
-        setIsUserProfileModalOpen(false);
-    }
+    // const [isNotificationModalOpen, setIsNotificationModalOpen]=useState(false);
+    // const toggleNotificationModal=()=>{
+    //     setIsNotificationModalOpen(prev=>!prev);
+    //     setIsUserProfileModalOpen(false);
+    // }
 
     const [isUserProfileModalOpen, setIsUserProfileModalOpen]=useState(false);
     const toggleUserProfileModal=()=>{
@@ -59,13 +59,13 @@ const Navbar=()=>{
                         <SquarePen/>
                         <span className='font-medium hidden md:inline'>Write</span>
                     </div>
-                    <Bell onClick={toggleNotificationModal}/>
+                    {/* <Bell onClick={toggleNotificationModal}/> */}
                     <CircleUserRound onClick={toggleUserProfileModal}/>
                 </div>  
             </nav>
 
             <Sidebar isOpen={isSidebarOpen} onClose={()=>setIsSidebarOpen(false)}/>
-            <NotificationModal isOpen={isNotificationModalOpen} onClose={()=>setIsNotificationModalOpen(false)}/>
+            {/* <NotificationModal isOpen={isNotificationModalOpen} onClose={()=>setIsNotificationModalOpen(false)}/> */}
             <UserProfileModal isOpen={isUserProfileModalOpen} onClose={()=>setIsUserProfileModalOpen(false)}/>
         </>
     );
