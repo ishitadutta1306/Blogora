@@ -1,5 +1,7 @@
 import Post from '../models/Post.js'
 import User from '../models/User.js'
+import Comment from '../models/Comment.js';
+import Like from '../models/Like.js'
 
 //Create post
 export const createPost=async(req,res)=>{
@@ -11,7 +13,7 @@ export const createPost=async(req,res)=>{
         }
 
         //find & store the user's document
-        const user=await User.findById(req.user.id);
+        const user=await User.findById(req.user._id);
         if (!user){
             return res.status(404).json({message: "User not found"});
         }
@@ -21,12 +23,12 @@ export const createPost=async(req,res)=>{
             title,
             subtitle,
             content,
-            coverImage,
+            coverImage: req.file ? `/uploads/${req.file.filename}` : null,
             tags,
             author: user._id,
             authorName: user.fullName,
             authorProfilePic: user.profilePic,
-            status: status || "draft"
+            status: status || "published"
         });
         await newPost.save();   //save this document to Post db
 
@@ -85,17 +87,34 @@ export const getPostBySlug=async(req,res)=>{
     try{
         const post=await Post.findOne({slug: req.params.slug})
             .populate("author","username profilePic")   //only select the username & profilePic fields of author field
-            .populate("tags","name")
-            .populate({
-                path: "comments",   //for comment field (means for every comment- select the following fields)
-                populate: {path: "author", select: "username profilePic"}   //in comment field, in author nested field, select username & profilePic to show instead of author object ids
-            });
+            .populate("tags","name");
         
         if (!post){
             return res.status(404).json({message: "Post not found"});
         }
+
+        //get logged-in user id safely
+        const userId = req.user?._id;
+
+        //check if this user has liked the post
+        const isLiked = userId ? await Like.exists({ user: userId, post: post._id }) : false;
+
+        //Fetch comments separately
+        const comments=await Comment.find({ post: post._id })
+            .sort({ createdAt: -1 })
+            .populate("user", "username profilePic")
+            .populate({
+                path: "parentComment",
+                select: "content user",
+                populate: { path: "user", select: "username profilePic" },
+        });
         
-        res.status(200).json(post);
+        // res.status(200).json(post);
+        res.json({
+            ...post.toObject(), 
+            comments, 
+            isLiked, 
+        });
     }
     catch(err){
         console.error(err);
@@ -107,7 +126,8 @@ export const getPostBySlug=async(req,res)=>{
 export const updatePost=async(req,res)=>{
     try{
         //extract these fields from request body
-        const {title,subtitle,content,coverImage,tags,status}=req.body;
+        // const {title,subtitle,content,coverImage,tags,status}=req.body;
+        const { title, subtitle, content, tags, status }=req.body || {};
 
         //find the post in db
         const post=await Post.findById(req.params.id);
@@ -130,14 +150,19 @@ export const updatePost=async(req,res)=>{
         if (content){
             post.content=content;
         }
-        if (coverImage){
-            post.coverImage=coverImage;
-        }
+        // if (coverImage){
+        //     post.coverImage=coverImage;
+        // }
         if (tags){
             post.tags=tags;
         }
         if (status){
             post.status=status;
+        }
+
+        //handle uploaded image
+        if (req.file) {
+            post.coverImage=`/uploads/${req.file.filename}`;
         }
 
         //save the post to db
