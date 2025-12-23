@@ -25,7 +25,7 @@ export const toggleLikePost=async(req,res)=>{
                 await Notification.create({
                     type: "like",
                     sender: req.user.id,
-                    recipient: post.user,
+                    recipient: post.author,
                     post: post._id
                 });
             }
@@ -37,8 +37,11 @@ export const toggleLikePost=async(req,res)=>{
         //save to db
         await post.save();
 
+        const liked = post.likes.includes(req.user.id);
+
         res.status(200).json({
-            message: post.likes.includes(req.user.id) ? "Post liked" : "Post unliked",
+            // message: post.likes.includes(req.user.id) ? "Post liked" : "Post unliked",
+            liked,
             likeCount: post.likeCount
         });
     }
