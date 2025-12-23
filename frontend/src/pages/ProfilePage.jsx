@@ -6,6 +6,7 @@ import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import BlogCard from '../components/BlogCard';
 
 const ProfilePage=()=>{
     const { user }=useAuth();   //logged-in user
@@ -34,6 +35,22 @@ const ProfilePage=()=>{
         return <p className="ml-120 mt-30">Loading...</p>;
     } 
 
+    const getImageUrl=(image) => {
+        if (!image){
+            return BlogPlaceholderImage;
+        }
+        // already a full URL
+        if (image.startsWith("http")) return image;
+
+        // already contains /uploads
+        if (image.startsWith("/uploads")) {
+            return `http://localhost:5000${image}`;
+        }
+
+        // filename only
+        return `http://localhost:5000/uploads/${image}`;
+    };
+
     const handleFollow=async(targetUserId)=>{
         try{
             const token=localStorage.getItem("token");
@@ -57,7 +74,7 @@ const ProfilePage=()=>{
                 {/* Upper half */}
                 <div className='flex gap-6'>
                     {/* Left section: profile pic */}
-                    <div className='flex justify-center items-center h-18 w-18 rounded-full bg-gray-100'>
+                    <div className='flex justify-center items-center h-18 w-18 rounded-full'>
                         {profile.profilePic ? (
                             <img src={profile.profilePic} className="h-18 w-18 rounded-full" />
                         ) : (
@@ -121,7 +138,7 @@ const ProfilePage=()=>{
                         </div>
 
                         <img 
-                            src={post.coverImage || BlogPlaceholderImage}
+                            src={getImageUrl(post.coverImage)}
                             className="h-20 w-30 object-cover rounded-lg"
                         />
                         </div>
@@ -131,23 +148,31 @@ const ProfilePage=()=>{
                     {activeTab === "Followers" && profile.followers.map(userItem => (
                         <div key={userItem._id} className='flex justify-between items-center py-2'>
                             {/* Left side */}
-                            <div className='flex items-center gap-3'>
-                                <div className='flex justify-center items-center h-10 w-10 rounded-full'>
-                                    {userItem.profilePic ? (
-                                        <img src={userItem.profilePic} className="h-18 w-18 rounded-full" />
-                                    ) : (
-                                        <CircleUserRound className='h-16 w-16'/>
-                                    )}
-                                </div>
-                                <div className='flex flex-col'>
-                                    <p className='font-medium'>{userItem.fullName}</p>
-                                    <p className='text-xs text-gray-600'>@{userItem.username}</p>
-                                </div>
+                            <div 
+                                onClick={() => navigate(`/profile/${userItem._id}`)} 
+                                className='flex items-center gap-3 hover:cursor-pointer'>
+                                    <div className='flex justify-center items-center h-10 w-10 rounded-full'>
+                                        {userItem.profilePic ? (
+                                            <img src={userItem.profilePic} className="h-18 w-18 rounded-full" />
+                                        ) : (
+                                            <CircleUserRound className='h-16 w-16'/>
+                                        )}
+                                    </div>
+                                    <div className='flex flex-col'>
+                                        <p className='font-medium'>{userItem.fullName}</p>
+                                        <p className='text-xs text-gray-600'>@{userItem.username}</p>
+                                    </div>
                             </div>
 
                             {/* Right side */} 
                             {userItem._id !== user._id && (
-                                <button onClick={()=>handleFollow(userItem._id)} className='px-3 h-7 bg-black text-white rounded-lg text-sm hover:cursor-pointer'>
+                                <button 
+                                    onClick={(e)=>{
+                                        e.stopPropagation();
+                                        handleFollow(userItem._id);
+                                    }} 
+                                    className='px-3 h-7 bg-black text-white rounded-lg text-sm hover:cursor-pointer'
+                                >
                                     {profile.following.some(f=>f._id===userItem._id) ? "Unfollow" : "Follow"}
                                 </button>
                             )}
@@ -158,7 +183,9 @@ const ProfilePage=()=>{
                     {activeTab === "Following" && profile.following.map(userItem => (
                         <div key={userItem._id} className='flex justify-between items-center py-2'>
                             {/* Left side */} 
-                            <div className='flex items-center gap-3'>
+                            <div
+                                onClick={() => navigate(`/profile/${userItem._id}`)}
+                                className='flex items-center gap-3'>
                                 <div className='flex justify-center items-center h-10 w-10 rounded-full'>
                                     {userItem.profilePic ? (
                                         <img src={userItem.profilePic} className="h-18 w-18 rounded-full" />
@@ -166,6 +193,7 @@ const ProfilePage=()=>{
                                         <CircleUserRound className='h-16 w-16'/>
                                     )}
                                 </div>
+
                                 <div className='flex flex-col'>
                                     <p className='font-medium'>{userItem.fullName}</p>
                                     <p className='text-xs text-gray-600'>@{userItem.username}</p>
@@ -174,7 +202,10 @@ const ProfilePage=()=>{
 
                             {/* Right side */} 
                             {userItem._id !== user._id && (
-                                <button onClick={()=>handleFollow(userItem._id)} className='px-3 h-7 border rounded-lg text-sm hover:cursor-pointer'>
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleFollow(userItem._id);
+                                }}>
                                     Unfollow
                                 </button>
                             )}
