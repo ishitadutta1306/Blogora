@@ -9,6 +9,7 @@ import BlogPage from './pages/BlogPage'
 import ProfilePage from './pages/ProfilePage'
 import CreateBlog from './pages/CreateBlog'
 import SavedPosts from './pages/SavedPosts'
+import EditBlog from "./pages/EditBlog"
 
 function App() {
 
@@ -45,6 +46,12 @@ function App() {
         <Route path='/saved' element={
             <ProtectedRoute>
               <SavedPosts/>
+            </ProtectedRoute>
+          }
+        />
+        <Route path='/edit-post/:slug' element={
+            <ProtectedRoute>
+              <EditBlog/>
             </ProtectedRoute>
           }
         />
