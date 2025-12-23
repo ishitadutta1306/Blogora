@@ -1,12 +1,13 @@
 import Post from '../models/Post.js'
 import Comment from '../models/Comment.js'
+import Notification from '../models/Notification.js'
 
 //Add comment
 export const addComment=async(req,res)=>{
     try{
         //extract which post, which parentcomment & comment content from request body
-        const {post,parentComment,content}=req.body;
-        if (!content){
+        const {post, parentComment, content}=req.body;
+        if (!content?.trim()){
             return res.status(404).json({message: "Content not found"});
         }
 
@@ -27,15 +28,17 @@ export const addComment=async(req,res)=>{
 
         //add this comment to the post's comment's array
         existingPost.comments.push(comment._id);
+        const realCount = await Comment.countDocuments({ post: existingPost._id });
+        existingPost.commentCount = realCount;
         await existingPost.save();
 
         //Notification: Comment on post
-        if (existingPost.user.toString() !== req.user.id) {
+        if (existingPost.author.toString() !== req.user.id) {
             await Notification.create({
                 type: "comment",
                 sender: req.user.id,
-                recipient: existingPost.user,
-                post: post,
+                recipient: existingPost.author,
+                post,
                 comment: comment._id
             });
         }
@@ -48,16 +51,16 @@ export const addComment=async(req,res)=>{
                     type: "comment",
                     sender: req.user.id,
                     recipient: parent.user,
-                    post: post,
+                    post,
                     comment: comment._id
                 });
             }
         }
 
-        res.status(201).json({
-            message: "Comment added successfully",
-            comment
-        });
+        const populatedComment=await Comment.findById(comment._id)
+            .populate("user", "username profilePic")
+            .populate("parentComment", "content");
+        res.status(201).json(populatedComment);
     }
     catch(err){
         console.error(err);
@@ -131,7 +134,13 @@ export const replyToComment=async(req,res)=>{
             post: parentComment.post,
             user: req.user.id,
             parentComment: parentComment._id,   //the document's ObjectId("...")
-            content: content
+            content,
+        });
+
+        //increment post comment count
+        await Post.findByIdAndUpdate(parentComment.post, {
+            $inc: { commentCount: 1 },
+            $push: { comments: reply._id },
         });
 
         await reply.save();
@@ -147,11 +156,10 @@ export const replyToComment=async(req,res)=>{
             });
         }
 
-        res.status(200).json({
-            message: "Replied to comment successfully",
-            reply
-        });
-
+        const populatedReply = await Comment.findById(reply._id)
+            .populate("user", "username profilePic")
+            .populate("parentComment", "content");
+        res.status(201).json(populatedReply);
     }
     catch(err){
         console.error(err);
