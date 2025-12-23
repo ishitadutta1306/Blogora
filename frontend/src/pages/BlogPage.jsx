@@ -1,15 +1,17 @@
 import Navbar from "../components/Navbar"
 import Sidebar from "../components/Sidebar"
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
-import { CircleUserRound, Dot, ThumbsUp, MessageCircle } from 'lucide-react'
+import { CircleUserRound, Dot, ThumbsUp, MessageCircle, SquarePen, Trash } from 'lucide-react'
 import { useState, useEffect } from "react"
 import LikesModal from "../components/LikesModal"
 import CommentsModal from "../components/CommentsModal"
 import axios from "axios"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import DeleteConfirmModal from "../components/DeleteConfirmModal"
 
 const BlogPage=()=>{
     const { slug }=useParams();
+    const navigate=useNavigate();
 
     const [post, setPost]=useState(null);
 
@@ -22,6 +24,11 @@ const BlogPage=()=>{
     const [showLikes, setShowLikes]=useState(false);
 
     const [selectedPost, setSelectedPost] = useState(null);
+
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    const isOwner = loggedInUser?._id === post?.author?._id;
+
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(()=>{
         const fetchPost=async()=>{
@@ -47,6 +54,23 @@ const BlogPage=()=>{
         }
         fetchPost();
     },[slug]);
+
+    const getImageUrl=(image) => {
+        if (!image){
+            return BlogPlaceholderImage;
+        }
+        // return image.startsWith("http") ? image : `http://localhost:5000/${image}`;
+        // already a full URL
+        if (image.startsWith("http")) return image;
+
+        // already contains /uploads
+        if (image.startsWith("/uploads")) {
+            return `http://localhost:5000${image}`;
+        }
+
+        // filename only
+        return `http://localhost:5000/uploads/${image}`;
+    };
 
     const toggleLike = async () => {
         try {
@@ -79,6 +103,23 @@ const BlogPage=()=>{
             ...prev,
             commentCount: prev.commentCount + 1
         }));
+    };
+
+    const handleDeletePost = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`http://localhost:5000/api/posts/${post._id}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            //After delete: go to homepage
+            navigate("/home");
+        } 
+        catch (err) {
+            console.error("Failed to delete post:",err);
+        }
     };
 
     return(
@@ -133,6 +174,27 @@ const BlogPage=()=>{
                         <span className='text-sm font-bold ml-1'>{post.commentCount}</span>
                     </div>
 
+                    {/* EDIT / DELETE - only for blog's author */} 
+                    <div className="flex items-center mb-4 mt-2">
+                        {isOwner && (
+                            <div className="flex gap-4 text-sm font-semibold">
+                                <button
+                                    onClick={() => navigate(`/edit-post/${post.slug}`)}
+                                    className="hover:cursor-pointer"
+                                >
+                                    <SquarePen/>
+                                </button>
+
+                                <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="hover:cursor-pointer"
+                                >
+                                    <Trash/>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Topics tags */}
                     <div className="flex items-center mb-4 hover:cursor-pointer">
                         {post.tags?.map((tag,index)=>(
@@ -145,7 +207,7 @@ const BlogPage=()=>{
                     {/* Blog Image */}
                     {post.coverImage && (
                         <div className='h-64 w-[480px] flex justify-center items-center mb-4'>
-                            <img src={post.coverImage || BlogPlaceholderImage} alt="" className='h-full object-cover rounded-lg'/>
+                            <img src={getImageUrl(post.coverImage)} alt="" className='h-full object-cover rounded-lg'/>
                         </div>
                     )}
 
@@ -171,6 +233,15 @@ const BlogPage=()=>{
                     postId={post._id}
                     onClose={() => setShowComments(false)}
                     onCommentAdded={handleCommentAdded}
+                />
+            )}
+
+            {showDeleteConfirm && (
+                <DeleteConfirmModal
+                    title="Delete this post?"
+                    description="This action cannot be undone."
+                    onCancel={() => setShowDeleteConfirm(false)}
+                    onConfirm={handleDeletePost}
                 />
             )}
         </>
