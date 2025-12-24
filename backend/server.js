@@ -13,6 +13,7 @@ import likeRoutes from './routes/likeRouter.js'
 import bookmarkRoutes from './routes/bookmarkRouter.js'
 import tagRoutes from './routes/tagRouter.js'
 import notificationRoutes from './routes/notificationRouter.js'
+import searchRoutes from './routes/searchRouter.js'
 
 const app=express();
 const PORT=process.env.PORT || 5000;
@@ -33,6 +34,7 @@ app.use('/api/likes',likeRoutes);
 app.use('/api/bookmarks',bookmarkRoutes);
 app.use('/api/tags',tagRoutes);
 app.use('/api/notifications',notificationRoutes);
+app.use("/api/search", searchRoutes);
 
 //Basic route
 app.get('/',(req,res)=>{
