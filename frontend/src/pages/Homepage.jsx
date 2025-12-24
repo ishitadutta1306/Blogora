@@ -19,7 +19,7 @@ const Homepage=()=>{
                 const filteredPosts=loggedInUser ? res.data.filter(post=>String(post.authorId)!==String(loggedInUser._id)) : res.data;
                 setPosts(filteredPosts);   //array of formatted posts
 
-                console.log("Fetched posts:",filteredPosts); // check slugs
+                // console.log("Fetched posts:",filteredPosts); // check slugs
             }
             catch(err){
                 console.error("Error fetching posts: ",err);
