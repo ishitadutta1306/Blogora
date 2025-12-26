@@ -16,6 +16,30 @@ const CreateBlog=()=>{
   const editorRef=useRef(null);
   const quillRef=useRef(null);
 
+  //generate with ai
+  const [aiLoading, setAiLoading]=useState(false);
+  const [aiRemaining, setAiRemaining]=useState(5);  //5 generations per day per user
+
+  useEffect(() => {
+    const fetchAIUsage = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/ai/usage",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setAiRemaining(res.data.remaining);
+      } 
+      catch (err) {
+        console.error("Failed to fetch AI usage");
+      }
+    };
+
+    fetchAIUsage();
+  }, []);
+
   if (!token) {
     return <Navigate to="/login" />;
   }
@@ -86,6 +110,50 @@ const CreateBlog=()=>{
     }
   };
 
+  const handleGenerateAI=async () => {
+    if (!title) {
+      toast.error("Enter a title first");
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+
+      const res = await axios.post("http://localhost:5000/api/ai/generate-blog", { title },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const generatedText = res.data.content;
+
+      //Insert AI content into Quill editor
+      quillRef.current.root.innerHTML = generatedText;
+
+      //Update remaining count if backend sends it later
+      if (res.data.remaining !== undefined) {
+        setAiRemaining(res.data.remaining);
+      } 
+      else {
+        setAiRemaining((prev) => prev - 1);
+      }
+
+      toast.success("AI content generated ✨");
+    } 
+    catch (err) {
+      if (err.response?.status === 429) {
+        toast.error("Daily AI limit reached (5/5)");
+      } 
+      else {
+        toast.error("AI generation failed");
+      }
+    } 
+    finally {
+      setAiLoading(false);
+    }
+  };
 
   return (
     <>
@@ -110,9 +178,37 @@ const CreateBlog=()=>{
               <div ref={editorRef} className="bg-white" />
             </div>
 
-            <button onClick={handlePost} className="mt-4 bg-black text-white px-6 py-2 rounded-full hover:cursor-pointer">
+            {/* AI usage info */}
+            <p className="text-sm text-gray-500 mt-3">
+              AI generations left today: {aiRemaining}/5
+            </p>
+
+            <div className="flex items-center gap-3 mt-4">
+              {/* ✨ Generate with AI */}
+              <button
+                onClick={handleGenerateAI}
+                disabled={aiLoading || aiRemaining <= 0}
+                className={`px-6 py-2 rounded-full text-white font-medium
+                  bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500
+                  hover:opacity-90 transition
+                  hover:cursor-pointer
+                  disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {aiLoading ? "Generating..." : "✨ Generate with AI"}
+              </button>
+
+              {/* Post Button */}
+              <button
+                onClick={handlePost}
+                className="bg-black text-white px-6 py-2 rounded-full hover:cursor-pointer"
+              >
+                Post
+              </button>
+            </div>
+
+            {/* <button onClick={handlePost} className="mt-4 bg-black text-white px-6 py-2 rounded-full hover:cursor-pointer">
               Post
-            </button>
+            </button> */}
           </div>
 
           {/* Image Upload Section */}
