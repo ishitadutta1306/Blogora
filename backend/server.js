@@ -14,6 +14,7 @@ import bookmarkRoutes from './routes/bookmarkRouter.js'
 import tagRoutes from './routes/tagRouter.js'
 import notificationRoutes from './routes/notificationRouter.js'
 import searchRoutes from './routes/searchRouter.js'
+import aiRoutes from "./routes/aiRouter.js";
 
 const app=express();
 const PORT=process.env.PORT || 5000;
@@ -35,6 +36,7 @@ app.use('/api/bookmarks',bookmarkRoutes);
 app.use('/api/tags',tagRoutes);
 app.use('/api/notifications',notificationRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/ai", aiRoutes);
 
 //Basic route
 app.get('/',(req,res)=>{
