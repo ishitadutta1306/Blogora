@@ -1,6 +1,7 @@
-import { CircleUserRound, Ellipsis, SendHorizontal } from 'lucide-react';
+import { CircleUserRound, SendHorizontal } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+const API=import.meta.env.VITE_API_URL;
 
 const CommentsModal=({ postId, onClose, onCommentAdded })=>{
     const [comments, setComments] = useState([]);
@@ -40,7 +41,7 @@ const CommentsModal=({ postId, onClose, onCommentAdded })=>{
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/comments/${postId}`)  //<-fix!
+                const res = await axios.get(`${API}/api/comments/${postId}`)
                 setComments(res.data)
             } 
             catch (err) {
@@ -57,7 +58,7 @@ const CommentsModal=({ postId, onClose, onCommentAdded })=>{
         }
 
         try {
-            const res=await axios.post(`http://localhost:5000/api/comments`,  //<- fix route
+            const res=await axios.post(`${API}/api/comments`,
                 {
                     post: postId,  
                     content: newComment
@@ -88,7 +89,7 @@ const CommentsModal=({ postId, onClose, onCommentAdded })=>{
         } 
 
         try {
-            const res = await axios.post(`http://localhost:5000/api/comments/reply/${commentId}`, //<-fix route
+            const res = await axios.post(`${API}/api/comments/reply/${commentId}`,
                 { content: replyText },
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -197,7 +198,7 @@ const CommentsModal=({ postId, onClose, onCommentAdded })=>{
     // Delete comment
     const handleDelete=async (commentId) => {
         try {
-            await axios.delete(`http://localhost:5000/api/comments/${commentId}`,
+            await axios.delete(`${API}/api/comments/${commentId}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }

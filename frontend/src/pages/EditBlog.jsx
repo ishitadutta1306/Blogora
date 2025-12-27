@@ -6,6 +6,7 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
 import toast from "react-hot-toast";
+const API=import.meta.env.VITE_API_URL;
 
 const EditBlog = () => {
   const { slug } = useParams();
@@ -28,7 +29,7 @@ const EditBlog = () => {
 
   if (!token) return <Navigate to="/login" />;
 
-  // 1️⃣ Init Quill (ONCE)
+  //Init Quill (ONCE)
   useEffect(() => {
     if (!editorRef.current) return;
     if (quillRef.current) return;
@@ -51,13 +52,13 @@ const EditBlog = () => {
     setQuillReady(true); //trigger
   }, []);
 
-  // 2️⃣ Fetch post AFTER Quill exists
+  //Fetch post AFTER Quill exists
   useEffect(() => {
     if (!quillReady) return;
 
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/posts/${slug}`,
+        const res = await axios.get(`${API}/api/posts/${slug}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         // setPostId(res.data._id);
@@ -93,11 +94,6 @@ const EditBlog = () => {
     if (file) setImage(file);
   };
 
-//   if (!postId) {
-//     toast.error("Post not ready yet");
-//     return;
-//   }
-
   const handleUpdate = async () => {
     if (!postId) {
       toast.error("Post not ready yet");
@@ -117,7 +113,7 @@ const EditBlog = () => {
       formData.append("content", contentHTML);
       if (image) formData.append("image", image);
 
-      await axios.put(`http://localhost:5000/api/posts/${postId}`, formData,
+      await axios.put(`${API}/api/posts/${postId}`, formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -138,9 +134,6 @@ const EditBlog = () => {
   {loading && (
     <p className="pt-20 text-center">Loading...</p>
   )}
-  // if (loading) {
-  //   return <p className="pt-20 text-center">Loading...</p>;
-  // }
 
   return (
     <>
@@ -191,7 +184,7 @@ const EditBlog = () => {
 
             {(image || existingImage) && (
               <img
-                src={image ? URL.createObjectURL(image) : existingImage?.startsWith("http") ? existingImage : `http://localhost:5000${existingImage}`}
+                src={image ? URL.createObjectURL(image) : existingImage?.startsWith("http") ? existingImage : `${API}${existingImage}`}
                 className="mt-4 rounded-lg max-h-48 object-cover"
               />
             )}

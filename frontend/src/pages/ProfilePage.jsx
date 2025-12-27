@@ -6,7 +6,8 @@ import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import BlogCard from '../components/BlogCard';
+// import BlogCard from '../components/BlogCard';
+const API=import.meta.env.VITE_API_URL;
 
 const ProfilePage=()=>{
     const { user }=useAuth();   //logged-in user
@@ -23,7 +24,7 @@ const ProfilePage=()=>{
 
     const fetchProfile=async()=>{
         try{
-            const res=await axios.get(`http://localhost:5000/api/users/profile/${id}`);
+            const res=await axios.get(`${API}/api/users/profile/${id}`);
             setProfile(res.data);
         }
         catch(err){
@@ -44,18 +45,18 @@ const ProfilePage=()=>{
 
         // already contains /uploads
         if (image.startsWith("/uploads")) {
-            return `http://localhost:5000${image}`;
+            return `${API}${image}`;
         }
 
         // filename only
-        return `http://localhost:5000/uploads/${image}`;
+        return `${API}/uploads/${image}`;
     };
 
     const handleFollow=async(targetUserId)=>{
         try{
             const token=localStorage.getItem("token");
 
-            await axios.put(`http://localhost:5000/api/users/follow/${targetUserId}`, {}, {headers: { Authorization: `Bearer ${token}`}});
+            await axios.put(`${API}/api/users/follow/${targetUserId}`, {}, {headers: { Authorization: `Bearer ${token}`}});
 
             fetchProfile(); //refresh profile after follow/unfollow 
         }

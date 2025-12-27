@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+const API=import.meta.env.VITE_API_URL;
 
 const Register=()=>{
     const [fullName, setFullName]=useState("");
@@ -20,7 +21,7 @@ const Register=()=>{
 
         try{
             //send POST request to backend register route
-            const res=await axios.post("http://localhost:5000/api/users/register",{
+            const res=await axios.post(`${API}/api/users/register`,{
                 fullName, username, email, password, 
                 authProvider: "email",
             });

@@ -1,10 +1,11 @@
-import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark, Ellipsis } from 'lucide-react'
+import { CircleUserRound, ThumbsUp, MessageCircle, Bookmark } from 'lucide-react'
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useState } from "react";
 import CommentsModal from './CommentsModal';
+const API=import.meta.env.VITE_API_URL;
 
 const BlogCard=({post})=>{
     const navigate=useNavigate();
@@ -24,7 +25,8 @@ const BlogCard=({post})=>{
     const toggleLike=async (e)=>{
         const token=localStorage.getItem("token");
 
-        const res=await axios.post(`http://localhost:5000/api/likes/post/${post._id}`, {},{ 
+        // const res=await axios.post(`http://localhost:5000/api/likes/post/${post._id}`, {},{ 
+        const res=await axios.post(`${API}/api/likes/post/${post._id}`, {},{ 
             headers: { Authorization: `Bearer ${token}` } 
         });
 
@@ -36,7 +38,7 @@ const BlogCard=({post})=>{
         try {
             const token=localStorage.getItem("token");
 
-            const res=await axios.put(`http://localhost:5000/api/posts/${post._id}/bookmark`, {}, {
+            const res=await axios.put(`${API}/api/posts/${post._id}/bookmark`, {}, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

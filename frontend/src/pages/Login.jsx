@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+const API=import.meta.env.VITE_API_URL;
 
 const Login=()=>{
     const [email, setEmail]=useState("");
@@ -19,7 +20,7 @@ const Login=()=>{
 
         try{
             //send POST request to backend login route
-            const res=await axios.post("http://localhost:5000/api/users/login",{
+            const res=await axios.post(`${API}/api/users/login`,{ 
                 email, password,
             });
 

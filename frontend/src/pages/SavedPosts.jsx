@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import BlogCard from "../components/BlogCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API=import.meta.env.VITE_API_URL;
 
 const SavedPosts=()=>{
     const [posts, setPosts]=useState([]);
@@ -16,7 +17,7 @@ const SavedPosts=()=>{
                 return;
             } 
 
-            const res=await axios.get(`http://localhost:5000/api/users/${user._id}/bookmarks`,
+            const res=await axios.get(`${API}/api/users/${user._id}/bookmarks`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }

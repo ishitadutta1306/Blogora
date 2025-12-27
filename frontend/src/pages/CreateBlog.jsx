@@ -6,6 +6,7 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import axios from 'axios'
 import toast from 'react-hot-toast'
+const API=import.meta.env.VITE_API_URL;
 
 const CreateBlog=()=>{
   const token=localStorage.getItem("token");
@@ -23,7 +24,7 @@ const CreateBlog=()=>{
   useEffect(() => {
     const fetchAIUsage = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/ai/usage",
+        const res = await axios.get(`${API}/api/ai/usage`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -88,8 +89,7 @@ const CreateBlog=()=>{
         formData.append("image", image);
       }
 
-      const res = await axios.post(
-        "http://localhost:5000/api/posts",
+      const res=await axios.post(`${API}/api/posts`,
         formData,
         {
           headers: {
@@ -119,7 +119,7 @@ const CreateBlog=()=>{
     try {
       setAiLoading(true);
 
-      const res = await axios.post("http://localhost:5000/api/ai/generate-blog", { title },
+      const res = await axios.post(`${API}/api/ai/generate-blog`, { title },
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -8,6 +8,7 @@ import CommentsModal from "../components/CommentsModal"
 import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 import DeleteConfirmModal from "../components/DeleteConfirmModal"
+const API=import.meta.env.VITE_API_URL;
 
 const BlogPage=()=>{
     const { slug }=useParams();
@@ -34,7 +35,7 @@ const BlogPage=()=>{
         const fetchPost=async()=>{
             try {
                 //include proper slug handling and populate author/tags
-                const res=await axios.get(`http://localhost:5000/api/posts/${slug}`,
+                const res=await axios.get(`${API}/api/posts/${slug}`,
                     {
                         headers:{
                             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -65,18 +66,18 @@ const BlogPage=()=>{
 
         // already contains /uploads
         if (image.startsWith("/uploads")) {
-            return `http://localhost:5000${image}`;
+            return `${API}${image}`;
         }
 
         // filename only
-        return `http://localhost:5000/uploads/${image}`;
+        return `${API}/uploads/${image}`;
     };
 
     const toggleLike = async () => {
         try {
             const token = localStorage.getItem("token");
 
-            const res = await axios.post(`http://localhost:5000/api/likes/post/${post._id}`, {},
+            const res = await axios.post(`${API}/api/likes/post/${post._id}`, {},
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -108,7 +109,7 @@ const BlogPage=()=>{
     const handleDeletePost = async () => {
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:5000/api/posts/${post._id}`,
+            await axios.delete(`${API}/api/posts/${post._id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }

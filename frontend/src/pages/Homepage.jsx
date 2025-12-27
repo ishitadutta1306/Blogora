@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import BlogCard from "../components/BlogCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+const API=import.meta.env.VITE_API_URL;
 
 const Homepage=()=>{
     const [posts, setPosts]=useState([]);
@@ -10,7 +11,7 @@ const Homepage=()=>{
     useEffect(()=>{
         const fetchPosts=async()=>{
             try{
-                const res=await axios.get("http://localhost:5000/api/posts");
+                const res=await axios.get(`${API}/api/posts`);
 
                 //get logged-in user from localStorage
                 const loggedInUser=JSON.parse(localStorage.getItem("user"));

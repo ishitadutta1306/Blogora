@@ -1,6 +1,7 @@
 import { CircleUserRound } from 'lucide-react'
 import { useEffect, useState } from "react";
 import axios from "axios";
+const API=import.meta.env.VITE_API_URL;
 
 const LikesModal=({postId, onClose})=>{
     const [users, setUsers] = useState([]);
@@ -9,7 +10,7 @@ const LikesModal=({postId, onClose})=>{
         const fetchLikes = async () => {
             const token = localStorage.getItem("token");
 
-            const res = await axios.get(`http://localhost:5000/api/likes/post/${postId}/likes`,
+            const res = await axios.get(`${API}/api/likes/post/${postId}/likes`,
                 {
                 headers: { Authorization: `Bearer ${token}` },
                 }

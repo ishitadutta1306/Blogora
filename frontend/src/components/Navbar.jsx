@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import UserProfileModal from './UserProfileModal';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API=import.meta.env.VITE_API_URL;
 
 const Navbar=()=>{
     const [isSidebarOpen, setIsSidebarOpen]=useState(true);
@@ -30,7 +31,7 @@ const Navbar=()=>{
         }
 
         const timeout=setTimeout(async () => {
-            const res=await axios.get(`http://localhost:5000/api/search?q=${query}`,
+            const res=await axios.get(`${API}/api/search?q=${query}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
