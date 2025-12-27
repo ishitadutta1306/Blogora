@@ -23,6 +23,11 @@ const PORT=process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+//to keep backend awake
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
