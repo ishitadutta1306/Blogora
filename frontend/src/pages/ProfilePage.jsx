@@ -36,6 +36,9 @@ const ProfilePage=()=>{
         return <p className="ml-120 mt-30">Loading...</p>;
     } 
 
+    const isOwnProfile=user?._id === profile._id;
+    const isFollowing=user && profile.followers.some(f => f._id === user._id);
+
     const getImageUrl=(image) => {
         if (!image){
             return BlogPlaceholderImage;
@@ -89,6 +92,18 @@ const ProfilePage=()=>{
                         <p className='font-bold text-xl'>{profile.fullName}</p>
                         {/* username */}
                         <p className='font-semibold text-gray-700'>@{profile.username}</p>
+
+                        {/* follow/unfollow button */}
+                        {!isOwnProfile && (
+                            <button
+                                onClick={() => handleFollow(profile._id)}
+                                className={`mt-4 px-4 py-1 rounded-lg text-sm font-medium hover:cursor-pointer ${
+                                isFollowing ? "bg-gray-300 text-black" : "bg-black text-white"
+                                }`}
+                            >
+                                {isFollowing ? "Unfollow" : "Follow"}
+                            </button>
+                        )}
 
                         {/* Stats section */}
                         <div className='flex gap-24 mt-4 pb-4'>
