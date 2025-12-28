@@ -1,13 +1,14 @@
 import Navbar from "../components/Navbar"
 import Sidebar from "../components/Sidebar"
 import BlogPlaceholderImage from '../assets/blog-placeholder.png'
-import { CircleUserRound, Dot, ThumbsUp, MessageCircle, SquarePen, Trash } from 'lucide-react'
+import { CircleUserRound, Dot, ThumbsUp, MessageCircle, SquarePen, Trash, Bookmark } from 'lucide-react'
 import { useState, useEffect } from "react"
 import LikesModal from "../components/LikesModal"
 import CommentsModal from "../components/CommentsModal"
 import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 import DeleteConfirmModal from "../components/DeleteConfirmModal"
+import toast from "react-hot-toast";
 const API=import.meta.env.VITE_API_URL;
 
 const BlogPage=()=>{
@@ -17,6 +18,8 @@ const BlogPage=()=>{
     const [post, setPost]=useState(null);
 
     const [liked, setLiked] = useState(false);
+    const [bookmarked, setBookmarked] = useState(false);
+
     const [likes, setLikes] = useState(0);
 
     const [loading, setLoading]=useState(true);
@@ -42,9 +45,14 @@ const BlogPage=()=>{
                         },
                     }
                 );
+                // setPost(res.data);
+                // setLiked(res.data.isLiked || false);
+                // setLikes(res.data.likeCount || 0);
+                // setBookmarked(res.data.isBookmarked);
                 setPost(res.data);
-                setLiked(res.data.isLiked || false);
-                setLikes(res.data.likeCount || 0);
+                setLiked(res.data.isLiked);
+                setBookmarked(res.data.isBookmarked);
+                setLikes(res.data.likeCount);
             } 
             catch (err) {
                 console.error("Error fetching post: ", err); 
@@ -56,11 +64,16 @@ const BlogPage=()=>{
         fetchPost();
     },[slug]);
 
+    const calculateReadingTime=(html) => {
+        const text=html.replace(/<[^>]+>/g, "");
+        const words=text.trim().split(/\s+/).length;
+        return Math.max(1, Math.ceil(words / 200)); //200 wpm
+    };
+
     const getImageUrl=(image) => {
         if (!image){
             return BlogPlaceholderImage;
         }
-        // return image.startsWith("http") ? image : `http://localhost:5000/${image}`;
         // already a full URL
         if (image.startsWith("http")) return image;
 
@@ -106,6 +119,55 @@ const BlogPage=()=>{
         }));
     };
 
+    const handleCommentDeleted = () => {
+        setPost(prev => ({
+            ...prev,
+            commentCount: Math.max(0, prev.commentCount - 1)
+        }));
+    };
+
+    // const toggleBookmark=async() => {
+    //     const token=localStorage.getItem("token");
+
+    //     const res=await axios.post(`${API}/api/bookmarks/post/${post._id}`, {},
+    //         { headers: { Authorization: `Bearer ${token}` } }
+    //     );
+
+    //     setBookmarked(res.data.bookmarked);
+    // };
+
+    const toggleBookmark=async(e)=>{
+        try {
+            const token=localStorage.getItem("token");
+
+            const res=await axios.put(`${API}/api/posts/${post._id}/bookmark`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            //update localStorage user
+            const storedUser=JSON.parse(localStorage.getItem("user"));
+
+            if (res.data.bookmarked){
+                storedUser.bookmarks.push(post._id);
+                toast.success("Added to bookmarks! ⭐");
+            } 
+            else{
+                storedUser.bookmarks=storedUser.bookmarks.filter(id=>id!==post._id);
+                toast("Removed from bookmarks! ❌");
+            }
+
+            localStorage.setItem("user", JSON.stringify(storedUser));
+            setBookmarked(res.data.bookmarked);
+        } 
+        catch (err) {
+            toast.error("Bookmark failed!");
+            console.error(err);
+        }
+    };
+
     const handleDeletePost = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -129,7 +191,7 @@ const BlogPage=()=>{
             <Sidebar/>
 
             {/* Blog Page container */}
-            <div className="flex justify-center pl-20">
+            <div className="flex justify-center pl-20 mb-6">
                 {/* Blog container */}
                 <div className="w-full max-w-3xl px-4 sm:px-2 pt-20 flex flex-col items-center">
                     {/* Blog title */}
@@ -144,12 +206,15 @@ const BlogPage=()=>{
                             ) : (
                                 <CircleUserRound className='h-8 w-8'/>
                             )}
-                            <span className='text-md font-medium'>{post.author?.username}</span>
+                            <span
+                                onClick={() => navigate(`/profile/${post.author._id}`)}
+                                className='text-md font-medium'>{post.author?.username}
+                            </span>
                         </div>
                         <Dot/>
 
                         {/* Blog details */}
-                        <p className="text-sm font-medium">{(post.readingTime || 5) + " min read"}</p>
+                        <p className="text-sm font-medium">{calculateReadingTime(post.content)} min read</p>
                         <Dot/>
                         <p className="text-sm font-medium">{new Date(post.createdAt).toLocaleDateString("en-US",{
                             month: "short",
@@ -160,7 +225,6 @@ const BlogPage=()=>{
                     {/* Action group */}
                     <div className='flex items-center mb-4'>
                         <ThumbsUp onClick={toggleLike} className={`h-6 w-6 cursor-pointer ${liked ? "fill-black" : ""}`}/>
-
                         <span onClick={() => setShowLikes(true)} className="text-sm font-bold ml-1 hover:cursor-pointer">
                             {likes}
                         </span>
@@ -173,6 +237,8 @@ const BlogPage=()=>{
                             <MessageCircle className='ml-2 h-6 w-6'/>
                         </button>
                         <span className='text-sm font-bold ml-1'>{post.commentCount}</span>
+
+                        <Bookmark onClick={toggleBookmark} className={`ml-3 h-6 w-6 cursor-pointer transition-colors ${bookmarked ? "fill-black text-black" : "text-black"}`}/>
                     </div>
 
                     {/* EDIT / DELETE - only for blog's author */} 
@@ -192,6 +258,8 @@ const BlogPage=()=>{
                                 >
                                     <Trash/>
                                 </button>
+
+                                
                             </div>
                         )}
                     </div>
@@ -234,6 +302,7 @@ const BlogPage=()=>{
                     postId={post._id}
                     onClose={() => setShowComments(false)}
                     onCommentAdded={handleCommentAdded}
+                    onCommentDeleted={handleCommentDeleted}
                 />
             )}
 

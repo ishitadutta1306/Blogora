@@ -146,17 +146,17 @@ const ProfilePage=()=>{
                             onClick={() => navigate(`/post/${post.slug}`)}
                             className="flex justify-between items-center mb-5 cursor-pointer"
                         >
-                        <div className="flex flex-col w-2/3">
-                            <p className="text-xl font-bold">{post.title}</p>
-                            <p className="text-sm text-gray-700 line-clamp-3">
-                                {post.content.replace(/<[^>]+>/g, "")}
-                            </p>
-                        </div>
+                            <div className="flex flex-col w-2/3">
+                                <p className="text-xl font-bold line-clamp-2 mb-2">{post.title}</p>
+                                <p className="text-sm text-gray-700 line-clamp-3">
+                                    {post.content.replace(/<[^>]+>/g, "")}
+                                </p>
+                            </div>
 
-                        <img 
-                            src={getImageUrl(post.coverImage)}
-                            className="h-20 w-30 object-cover rounded-lg"
-                        />
+                            <img 
+                                src={getImageUrl(post.coverImage)}
+                                className="h-20 w-30 object-cover rounded-lg"
+                            />
                         </div>
                     ))}
 
@@ -221,6 +221,7 @@ const ProfilePage=()=>{
                                 <button onClick={(e) => {
                                     e.stopPropagation();
                                     handleFollow(userItem._id);
+                                    className='px-3 h-7 bg-gray-300 text-black rounded-lg text-sm hover:cursor-pointer'
                                 }}>
                                     Unfollow
                                 </button>

@@ -14,13 +14,26 @@ const BlogCard=({post})=>{
     const [bookmarked, setBookmarked]=useState(post.isBookmarked || false);
 
     const loggedInUser=JSON.parse(localStorage.getItem("user"));
-    const isBookmarked=loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
+    // const isBookmarked=loggedInUser?.bookmarks?.includes(post._id) || post.bookmarked;
 
     const [liked, setLiked]=useState(post.isLiked);
     const [likes, setLikes]=useState(post.likeCount);
 
     const [showComments, setShowComments]=useState(false);
     const [commentCountState, setCommentCountState]=useState(commentCount);
+
+    const getImageUrl=(image) => {
+        if (!image){
+            return BlogPlaceholderImage;
+        } 
+        if (image.startsWith("http")){
+            return image;
+        } 
+        if (image.startsWith("/uploads")){
+            return `${API}${image}`;
+        } 
+        return `${API}/uploads/${image}`;
+    };
 
     const toggleLike=async (e)=>{
         const token=localStorage.getItem("token");
@@ -84,7 +97,7 @@ const BlogCard=({post})=>{
 
                     {/* Blog details */}
                     <div onClick={()=>navigate(`/post/${slug}`)} className='flex flex-col mr-4'>
-                        <p className='text-2xl font-bold mb-2'>{title}</p>
+                        <p className='text-2xl font-bold mb-2 line-clamp-2'>{title}</p>
                         <p className="text-md mb-2 line-clamp-3">
                             {content.replace(/<[^>]+>/g, "")}
                         </p>
@@ -110,7 +123,7 @@ const BlogCard=({post})=>{
 
             {/* Right section */}
             <div className='h-1/2 w-1/3 flex justify-end items-center'>
-                <img src={coverImage || BlogPlaceholderImage} alt="" className='object-cover rounded-lg'/>
+                <img src={getImageUrl(post.coverImage)} alt="" className='object-cover rounded-lg'/>
             </div>
 
             {showComments && (
