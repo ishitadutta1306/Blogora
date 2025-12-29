@@ -22,17 +22,20 @@ const BlogCard=({post})=>{
     const [showComments, setShowComments]=useState(false);
     const [commentCountState, setCommentCountState]=useState(commentCount);
 
-    const getImageUrl=(image) => {
-        if (!image){
-            return BlogPlaceholderImage;
-        } 
-        if (image.startsWith("http")){
-            return image;
-        } 
-        if (image.startsWith("/uploads")){
-            return `${API}${image}`;
-        } 
-        return `${API}/uploads/${image}`;
+    // const getImageUrl=(image) => {
+    //     if (!image){
+    //         return BlogPlaceholderImage;
+    //     } 
+    //     if (image.startsWith("http")){
+    //         return image;
+    //     } 
+    //     if (image.startsWith("/uploads")){
+    //         return `${API}${image}`;
+    //     } 
+    //     return `${API}/uploads/${image}`;
+    // };
+    const getImageUrl = (image) => {
+        return image || BlogPlaceholderImage;
     };
 
     const toggleLike=async (e)=>{

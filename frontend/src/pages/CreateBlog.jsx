@@ -86,7 +86,7 @@ const CreateBlog=()=>{
       formData.append("status", "published");
 
       if (image) {
-        formData.append("image", image);
+        formData.append("coverImage", image);
       }
 
       const res=await axios.post(`${API}/api/posts`,
@@ -94,7 +94,6 @@ const CreateBlog=()=>{
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -217,6 +216,7 @@ const CreateBlog=()=>{
               <span className="text-gray-700">Add an image</span>
               <input
                 type="file"
+                name="coverImage"
                 accept="image/*"
                 hidden
                 onChange={handleImageUpload}

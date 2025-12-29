@@ -117,7 +117,6 @@ const EditBlog = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -179,7 +178,13 @@ const EditBlog = () => {
           <div className="bg-white p-6 rounded-xl shadow-md">
             <label className="cursor-pointer border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center">
               <span>Add / Change image</span>
-              <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
+              <input 
+                hidden 
+                type="file" 
+                name="coverImage" 
+                accept="image/*" 
+                onChange={handleImageUpload} 
+              />
             </label>
 
             {(image || existingImage) && (

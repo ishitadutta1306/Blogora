@@ -70,20 +70,23 @@ const BlogPage=()=>{
         return Math.max(1, Math.ceil(words / 200)); //200 wpm
     };
 
+    // const getImageUrl=(image) => {
+    //     if (!image){
+    //         return BlogPlaceholderImage;
+    //     }
+    //     // already a full URL
+    //     if (image.startsWith("http")) return image;
+
+    //     // already contains /uploads
+    //     if (image.startsWith("/uploads")) {
+    //         return `${API}${image}`;
+    //     }
+
+    //     // filename only
+    //     return `${API}/uploads/${image}`;
+    // };
     const getImageUrl=(image) => {
-        if (!image){
-            return BlogPlaceholderImage;
-        }
-        // already a full URL
-        if (image.startsWith("http")) return image;
-
-        // already contains /uploads
-        if (image.startsWith("/uploads")) {
-            return `${API}${image}`;
-        }
-
-        // filename only
-        return `${API}/uploads/${image}`;
+        return image || BlogPlaceholderImage;
     };
 
     const toggleLike = async () => {
@@ -125,16 +128,6 @@ const BlogPage=()=>{
             commentCount: Math.max(0, prev.commentCount - 1)
         }));
     };
-
-    // const toggleBookmark=async() => {
-    //     const token=localStorage.getItem("token");
-
-    //     const res=await axios.post(`${API}/api/bookmarks/post/${post._id}`, {},
-    //         { headers: { Authorization: `Bearer ${token}` } }
-    //     );
-
-    //     setBookmarked(res.data.bookmarked);
-    // };
 
     const toggleBookmark=async(e)=>{
         try {

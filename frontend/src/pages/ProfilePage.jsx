@@ -39,20 +39,23 @@ const ProfilePage=()=>{
     const isOwnProfile=user?._id === profile._id;
     const isFollowing=user && profile.followers.some(f => f._id === user._id);
 
-    const getImageUrl=(image) => {
-        if (!image){
-            return BlogPlaceholderImage;
-        }
-        // already a full URL
-        if (image.startsWith("http")) return image;
+    // const getImageUrl=(image) => {
+    //     if (!image){
+    //         return BlogPlaceholderImage;
+    //     }
+    //     // already a full URL
+    //     if (image.startsWith("http")) return image;
 
-        // already contains /uploads
-        if (image.startsWith("/uploads")) {
-            return `${API}${image}`;
-        }
+    //     // already contains /uploads
+    //     if (image.startsWith("/uploads")) {
+    //         return `${API}${image}`;
+    //     }
 
-        // filename only
-        return `${API}/uploads/${image}`;
+    //     // filename only
+    //     return `${API}/uploads/${image}`;
+    // };
+    const getImageUrl = (image) => {
+        return image || BlogPlaceholderImage;
     };
 
     const handleFollow=async(targetUserId)=>{
