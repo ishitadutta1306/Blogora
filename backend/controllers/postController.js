@@ -6,6 +6,8 @@ import Like from '../models/Like.js'
 //Create post
 export const createPost=async(req,res)=>{
     try{
+        console.log("FILE:", req.file);
+ 
         //extract the following fields from request body
         const {title,subtitle,content,coverImage,tags,status}=req.body;
         if (!title || !content){
@@ -23,7 +25,8 @@ export const createPost=async(req,res)=>{
             title,
             subtitle,
             content,
-            coverImage: req.file ? `/uploads/${req.file.filename}` : null,
+            // coverImage: req.file ? `/uploads/${req.file.filename}` : null,
+            coverImage: req.file ? req.file.path : null,
             tags,
             author: user._id,
             authorName: user.fullName,
@@ -162,7 +165,8 @@ export const updatePost=async(req,res)=>{
 
         //handle uploaded image
         if (req.file) {
-            post.coverImage=`/uploads/${req.file.filename}`;
+            // post.coverImage=`/uploads/${req.file.filename}`;
+            post.coverImage=req.file.path;
         }
 
         //save the post to db
