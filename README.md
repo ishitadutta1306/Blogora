@@ -1,5 +1,5 @@
 # 📝 Blogora - Social Blogging Platform with AI-Assisted Content Generation
-Blogora is a **full-stack blogging web application** where users can create, share, and engage with blog posts. It also includes an AI-assisted blog generation feature that helps users generate blog content based on a given title using the **Hugging Face API.**
+Blogora is a **full-stack blogging web application** where users can create and engage with blog posts. It also includes an AI-assisted blog generation feature that helps users generate blog content based on a given title using the **Hugging Face API.**
 
 The platform supports modern social blogging features such as following users, liking posts, bookmarking, and commenting, with **cloud-based image storage using Cloudinary.**
 
@@ -14,7 +14,7 @@ https://blogora-green.vercel.app/
 - Profile page with:
   - User details
   - Followers & following
-  - User’s blog posts
+  - User's blog posts
 
 **2. Blogging Features**
 - Create blog posts with:
@@ -28,7 +28,7 @@ https://blogora-green.vercel.app/
 **3. AI-Assisted Blog Generation**
 - Generate blog content by providing a title
 - Integrated with Hugging Face text generation models
-- Helps users with writer’s block and faster content creation
+- Helps users with writer's block and faster content creation
 
 **4.  Image Upload**
 - Blog cover images uploaded and stored using Cloudinary
@@ -78,7 +78,7 @@ npm install
 
 **3. Environment Variables**
 
-Create a .env file inside the server folder:
+Create a .env file inside the **backend** folder:
 ```
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
