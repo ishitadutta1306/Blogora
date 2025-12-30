@@ -49,7 +49,8 @@ https://blogora-green.vercel.app/
   - MongoDB
   - Mongoose
   - JWT Authentication
-  - Multer (for file uploads)
+  - Multer
+  - Cloudinary SDK
 
 - **AI Integration:**
   - Hugging Face API (Text Generation)
