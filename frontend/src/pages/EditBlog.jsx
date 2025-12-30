@@ -16,7 +16,6 @@ const EditBlog = () => {
   
   const [postId, setPostId] = useState(null);
 
-
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
@@ -75,7 +74,7 @@ const EditBlog = () => {
         quillRef.current.clipboard.dangerouslyPasteHTML(res.data.content || "");
         // setLoading(false);
 
-        // console.log("POST DATA 👉", res.data);
+        // console.log("POST DATA:", res.data);
       } 
       catch (err) {
         console.error(err);
@@ -111,7 +110,9 @@ const EditBlog = () => {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("content", contentHTML);
-      if (image) formData.append("image", image);
+      if (image){
+        formData.append("coverImage", image);
+      } 
 
       await axios.put(`${API}/api/posts/${postId}`, formData,
         {
